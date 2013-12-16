@@ -1,0 +1,29 @@
+{% extends 'hris_system/base.html' %}
+{% block title %}{% endblock %}
+{% block body_block %}
+{% load static %}
+
+<div>
+	<h1>Login</h1>
+	{% if failed_attempt %}
+	<h4>Invalid login information</h4>
+	{% endif %}
+
+	{% if disabled %}
+	<h4>This account has been disabled</h4>
+	{% endif %}
+
+	<div>
+		<form id="login_form" method="POST" action="/hris/login/">
+			{% csrf_token %}
+			Username: <input type="text" name="username" value="" size="50" />
+			<br/>
+			Password: <input type="password" name="password" value="" size="50" />
+			<br/>
+
+			<input type="submit" value="submit" />
+		</form>	
+	</div>
+</div>
+
+{% endblock %}

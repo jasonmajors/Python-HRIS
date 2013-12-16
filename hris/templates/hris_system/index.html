@@ -1,0 +1,17 @@
+{% extends 'hris_system/base.html' %}
+{% block title %}{% endblock %}
+{% block body_block %}
+{% load static %}
+
+<div class="hero-unit">
+	<h1>Dashboard</h1>
+
+</div>
+<div>
+	{% if user.is_authenticated %}
+	<a href="/hris/submit/">Submit Request</a>
+	{% endif %}
+</div>	
+
+
+{% endblock %}	
