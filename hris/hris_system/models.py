@@ -5,14 +5,16 @@ from django.contrib.auth.models import User
 class TimeOffRequest(models.Model):
 	date_start = models.DateField(auto_now=False, auto_now_add=False)
 	date_end = models.DateField(auto_now=False, auto_now_add=False)
-	user = models.OneToOneField(User)
+	user = models.ForeignKey(User)
 	status = models.CharField(max_length=25, default="PENDING")
 
+	# many-to-one relationship between time off requests and employees
+	# employee = models.ForiegnKey(Employee)
 	def __unicode__(self):
-		return self.user
+		return self.user.username
 
 # Will build this out later. Adding an employee should create a "User".
-# Think about how to combine the rango.views.register with creating an employee.
+# See: https://docs.djangoproject.com/en/dev/topics/auth/default/#user-objects
 class Employee(models.Model):
 	pass
 
