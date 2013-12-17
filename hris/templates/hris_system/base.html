@@ -13,6 +13,9 @@
     <div class="future navbar">
       {% if user.is_authenticated %}
       <li>Welcome, {{ user.username }}</li>
+      <li><a href="/hris/add_employee">Add New Employee</a></li>
+      <li><a href="/hris/submit">Request Time Off</li>
+      <li><a href="/hris/timeoff">View Time Off Requests</li>
       <li><a href="/hris/logout">Logout</a></li>
       {% else %}
       <li><a href="/hris/login">Login</a></li>

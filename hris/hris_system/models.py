@@ -8,15 +8,18 @@ class TimeOffRequest(models.Model):
 	user = models.ForeignKey(User)
 	status = models.CharField(max_length=25, default="PENDING")
 
-	# many-to-one relationship between time off requests and employees
-	# employee = models.ForiegnKey(Employee)
 	def __unicode__(self):
 		return self.user.username
 
 # Will build this out later. Adding an employee should create a "User".
 # See: https://docs.djangoproject.com/en/dev/topics/auth/default/#user-objects
 class Employee(models.Model):
-	pass
+	user = models.OneToOneField(User)
+	last_name = models.CharField(max_length=25)
+	first_name = models.CharField(max_length=25)
+
+	def __unicode__(self):
+		return self.user.username
 
 # Will build this out later.
 class Schedule(models.Model):

@@ -1,0 +1,30 @@
+{% extends 'hris_system/base.html' %}
+{% block title %}{% endblock %}
+{% block body_block %}
+{% load static %}
+<div>
+	<h1>Time Off Request Status</h1>
+
+	{% if pending_requests %}
+	<h3>PENDING REQUESTS</h3>
+		{% for request in pending_requests %}
+		<li><strong>{{ request.user }}</strong> -- {{ request.date_start }} through {{ request.date_end }}
+		{% endfor %}
+	{% endif %}	
+
+	{% if approved_requests %}
+	<h3>APPROVED REQUESTS</h3>
+		{% for request in approved_requests %}
+		<li><strong>{{ request.user }}</strong> -- {{ request.date_start }} through {{ request.date_end }}
+		{% endfor %}
+	{% endif %}		
+
+	{% if denied_requests %}
+	<h3>DENIED REQUESTS</h3>
+		{% for request in denied_requests %}
+		<li><strong>{{ request.user }}</strong> -- {{ request.date_start }} through {{ request.date_end }}
+		{% endfor %}
+	{% endif %}	
+
+</div>
+{% endblock %}

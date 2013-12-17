@@ -4,7 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-from hris_system.forms import TimeOffRequestForm 
+from hris_system.forms import TimeOffRequestForm, EmployeeForm
+from hris_system.models import TimeOffRequest 
 
 def index(request):
 	context = RequestContext(request)
@@ -71,3 +72,42 @@ def user_logout(request):
 	logout(request)
 
 	return HttpResponseRedirect('/hris/')
+
+@login_required
+def get_timeoff_requests(request):
+	context = RequestContext(request)
+	context_dict = {}
+
+	pending_requests = TimeOffRequest.objects.filter(status="PENDING")
+	approved_requests = TimeOffRequest.objects.filter(status="APPROVED")
+	denied_requests = TimeOffRequest.objects.filter(status="DENIED")
+
+	context_dict['pending_requests'] = pending_requests
+	context_dict['approved_requests'] = approved_requests
+	context_dict['denied_requests'] = denied_requests
+
+	return render_to_response('hris_system/timeoff.html', context_dict, context)
+
+@login_required
+def add_employee(request):
+	context = RequestContext(request)
+	context_dict = {}
+
+	if request.method == "POST":
+		form = EmployeeForm(request.POST)
+
+		if form.is_valid():
+			
+			employee = form.save(commit=False)
+			username = employee.first_name + "_" + employee.last_name
+			new_user = User.objects.create_user(username=username, password="password")
+			employee.user = new_user
+			employee.save()
+
+			return index(request)
+		else:
+			print form.errors
+	else:
+		form = EmployeeForm()
+
+	return render_to_response('hris_system/add_employee.html', {'form':form}, context)
