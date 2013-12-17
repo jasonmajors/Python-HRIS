@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from hris_system.forms import TimeOffRequestForm, EmployeeForm
-from hris_system.models import TimeOffRequest 
+from hris_system.models import TimeOffRequest, Employee 
 
 def index(request):
 	context = RequestContext(request)
@@ -23,9 +23,10 @@ def submit(request):
 
 		if form.is_valid():
 			time_off_request = form.save(commit=False)
-
 			user = User.objects.get(username=request.user)
-			time_off_request.user = user
+			employee = Employee.objects.get(user=user)
+			
+			time_off_request.employee = employee
 			time_off_request.save()
 
 			return index(request)
