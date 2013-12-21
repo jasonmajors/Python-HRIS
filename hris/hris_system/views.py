@@ -93,22 +93,25 @@ def get_timeoff_requests(request, request_status):
 
 	return render_to_response('hris_system/timeoff.html', context_dict, context)
 
-# FIX needed - weird behavior happening.
+# Messy - doesn't actually return anywhere
 def approve_timeoff(request):
 	context = RequestContext(request)
 	context_dict = {}
 	request_id = None
 
+	status = "PENDING"
+	timeoff_requests = TimeOffRequest.objects.filter(status=status)
+
+	context_dict['status'] = status
+	context_dict['timeoff_requests'] = timeoff_requests
+
 	if request.method == "GET":
 		request_id = request.GET['request_id']
 
 		if request_id:
-			time_off_request = TimeOffRequest.objects.get(id=int(request_id))
-			print time_off_request
-			time_off_request.status = "APPROVED"
-			time_off_request.save()
-			print request_id
-			print time_off_request
+			t_request = TimeOffRequest.objects.get(id=int(request_id))
+			t_request.status = "APPROVED"
+			t_request.save()
 
 	return render_to_response('hris_system/timeoff_requests.html', context_dict, context)
 
