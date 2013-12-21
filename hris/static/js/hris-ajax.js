@@ -2,9 +2,20 @@ $(document).ready(function() {
 	// Not currently working.
 	$('.approve').click(function(){
 		var reqid = $(this).attr("data-reqid");
+		var approvedeny = $(this).attr("data-approvedeny");
 		var me = $(this)
-		$.get('/hris/approve_timeoff/', {request_id: reqid}, function(data){
-			//$('#requests').html(data);
+		$.get('/hris/handle_timeoff/', {request_id: reqid, approve_or_deny: approvedeny}, function(data){
+			$('#requests').html(data);
+			me.hide();
+		});
+	});
+
+	$('.deny').click(function(){
+		var reqid = $(this).attr("data-reqid");
+		var approvedeny = $(this).attr("data-approvedeny");
+		var me = $(this)
+		$.get('/hris/handle_timeoff/', {request_id: reqid, approve_or_deny: approvedeny}, function(data){
+			$('#requests').html(data);
 			me.hide();
 		});
 	});

@@ -8,10 +8,16 @@
 	{% if timeoff_requests %}
 	<h3>{{ status }} REQUESTS</h3>
 		<div id="requests">	
+			<ul>
 			{% for request in timeoff_requests %}
 				<li><strong>{{ request.employee.last_name }}, {{ request.employee.first_name }}, {{ request.id }}</strong> -- {{ request.date_start }} through {{ request.date_end }} 
-				<button class="approve" data-reqid="{{ request.id }}" type="button">Approve</button></li>
+				{% if buttons %}			
+				<button class="approve" data-reqid="{{ request.id }}" data-approvedeny="APPROVED" type="button">Approve</button>
+				<button class="deny" data-reqid="{{ request.id }}" data-approvedeny="DENIED" type="button">Deny</button>
+				{% endif %}
+				</li>
 			{% endfor %}
+			</ul>
 		</div>
 	{% endif %}	
 </div>

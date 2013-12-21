@@ -20,7 +20,7 @@ def index(request):
 	return render_to_response('hris_system/index.html', context_dict, context)
 
 @login_required
-def submit(request):
+def submit_timeoff(request):
 	context = RequestContext(request)
 	context_dict = {}
 
@@ -84,17 +84,24 @@ def user_logout(request):
 def get_timeoff_requests(request, request_status):
 	context = RequestContext(request)
 	context_dict = {}
+	employee_list = get_employee_list()
 	status = request_status.upper()
+	buttons = False
 
-	timeoff_requests = TimeOffRequest.objects.filter(status=status)
+	if status == "PENDING":
+		buttons = True
 
+	timeoff_requests = TimeOffRequest.objects.filter(status=status).order_by('-id')
+
+	context_dict['employee_list'] = employee_list
 	context_dict['timeoff_requests'] = timeoff_requests
 	context_dict['status'] = status
+	context_dict['buttons'] = buttons
 
 	return render_to_response('hris_system/timeoff.html', context_dict, context)
 
-# Messy - doesn't actually return anywhere
-def approve_timeoff(request):
+@login_required
+def handle_timeoff(request):
 	context = RequestContext(request)
 	context_dict = {}
 	request_id = None
@@ -107,13 +114,14 @@ def approve_timeoff(request):
 
 	if request.method == "GET":
 		request_id = request.GET['request_id']
+		approve_or_deny = request.GET['approve_or_deny']
 
 		if request_id:
 			t_request = TimeOffRequest.objects.get(id=int(request_id))
-			t_request.status = "APPROVED"
+			t_request.status = approve_or_deny
 			t_request.save()
 
-	return render_to_response('hris_system/timeoff_requests.html', context_dict, context)
+	return render_to_response('hris_system/timeoff_requests.html', context_dict, context)	
 
 @login_required
 def add_employee(request):

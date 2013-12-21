@@ -19,6 +19,7 @@
       <li><a href="/hris/submit">Request Time Off</li>
       <li><a href="/hris/timeoff/pending">View Pending Time Off Requests</li>
       <li><a href="/hris/timeoff/approved">View Approved Time Off Requests</li>
+      <li><a href="/hris/timeoff/denied">View Denied Time Off Requests</li>
       <li><a href="/hris/logout">Logout</a></li>
       {% else %}
       <li><a href="/hris/login">Login</a></li>
@@ -28,6 +29,8 @@
      <!-- End of Navbar -->
      <!-- Search bar on the side -->
     <div>
+      {% if user.is_authenticated %}
+        {% if employee_list %}
           <p>Search Employees</p>
           <form>
           <label></label>
@@ -35,11 +38,12 @@
           </form>
         
      
-       {% if employee_list %}
+       
          <div id="emps">
           {% include "hris_system/employee_list.html" with employee_list=employee_list %}
          </div>
-       {% endif %}
+        {% endif %}
+      {% endif %}
     </div>
      <!-- End search bar-->
 
