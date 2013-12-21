@@ -4,7 +4,7 @@
 {% load static %}
 
 <!-- Dashboard -->
-<div class="hero-unit">
+<div>
 	<h1>Dashboard</h1>
 
 </div>
@@ -12,6 +12,16 @@
 
 <!-- Employee Analytics -->
 <div>
+	<div>
+		<h4>Recent Hires</h4>
+		{% if employees %}
+		<ul>
+			{% for e in employees %}
+				<li>{{ e.last_name }}, {{ e.first_name }}</li>
+			{% endfor %}
+		</ul>
+		{% endif %}		
+	</div>	
 </div>	
 <!-- end Analytics -->
 

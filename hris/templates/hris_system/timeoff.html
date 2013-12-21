@@ -5,26 +5,15 @@
 <div>
 	<h1>Time Off Request Status</h1>
 
-	{% if pending_requests %}
-	<h3>PENDING REQUESTS</h3>
-		{% for request in pending_requests %}
-		<li><strong>{{ request.employee.last_name }}, {{ request.employee.first_name }}</strong> -- {{ request.date_start }} through {{ request.date_end }}
-		{% endfor %}
+	{% if timeoff_requests %}
+	<h3>{{ status }} REQUESTS</h3>
+		<div id="requests">	
+			{% for request in timeoff_requests %}
+				<li><strong>{{ request.employee.last_name }}, {{ request.employee.first_name }}, {{ request.id }}</strong> -- {{ request.date_start }} through {{ request.date_end }} 
+				<button class="approve" data-reqid="{{ request.id }}" type="button">Approve</button></li>
+			{% endfor %}
+		</div>
 	{% endif %}	
-
-	{% if approved_requests %}
-	<h3>APPROVED REQUESTS</h3>
-		{% for request in approved_requests %}
-		<li><strong>{{ request.employee.last_name }}, {{ request.employee.first_name }}</strong> -- {{ request.date_start }} through {{ request.date_end }}
-		{% endfor %}
-	{% endif %}		
-
-	{% if denied_requests %}
-	<h3>DENIED REQUESTS</h3>
-		{% for request in denied_requests %}
-		<li><strong>{{ request.employee.last_name }}, {{ request.employee.first_name }}</strong> -- {{ request.date_start }} through {{ request.date_end }}
-		{% endfor %}
-	{% endif %}	
-
 </div>
+
 {% endblock %}

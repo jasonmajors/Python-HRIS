@@ -1,0 +1,9 @@
+{% if employee_list %}
+	<h3>Employees</h3>
+	<ul>
+		{% for employee in employee_list %}
+		<li>{{ employee.last_name }}, {{ employee.first_name }}</li>
+		{% endfor %}
+{% else %}
+	<h3>No Employees in the system</h3>
+{% endif %}			

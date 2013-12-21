@@ -1,0 +1,25 @@
+{% if pending_requests %}
+	<h3>PENDING REQUESTS</h3>
+		{% for request in pending_requests %}
+		<li><strong>{{ request.employee.last_name }}, {{ request.employee.first_name }}</strong> -- {{ request.date_start }} through {{ request.date_end }}
+			<button class="approve" data-empid="{{ request.employee.id }}" type="button">Approve</button></li>
+		{% endfor %}
+	{% endif %}	
+	</div>
+
+	<div>
+	{% if approved_requests %}
+	<h3>APPROVED REQUESTS</h3>
+		{% for request in approved_requests %}
+		<li><strong>{{ request.employee.last_name }}, {{ request.employee.first_name }}</strong> -- {{ request.date_start }} through {{ request.date_end }}</li>
+		{% endfor %}
+	{% endif %}		
+	</div>
+
+	<div>
+	{% if denied_requests %}
+	<h3>DENIED REQUESTS</h3>
+		{% for request in denied_requests %}
+		<li><strong>{{ request.employee.last_name }}, {{ request.employee.first_name }}</strong> -- {{ request.date_start }} through {{ request.date_end }}</li>
+		{% endfor %}
+	{% endif %}	

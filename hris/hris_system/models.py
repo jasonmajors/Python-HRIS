@@ -13,13 +13,13 @@ class Employee(models.Model):
 		return self.user.username
 
 class TimeOffRequest(models.Model):
+	employee = models.ForeignKey(Employee)
 	date_start = models.DateField(auto_now=False, auto_now_add=False)
 	date_end = models.DateField(auto_now=False, auto_now_add=False)
-	employee = models.ForeignKey(Employee)
 	status = models.CharField(max_length=25, default="PENDING")
 
 	def __unicode__(self):
-		return self.user.username
+		return self.employee.user.username
 
 # Will build this out later.
 class Schedule(models.Model):

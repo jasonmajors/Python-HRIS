@@ -1,0 +1,4 @@
+{% for request in timeoff_requests %}
+	<li><strong>{{ request.employee.last_name }}, {{ request.employee.first_name }}</strong> -- {{ request.date_start }} through {{ request.date_end }} 
+	<button class="approve" data-empid="{{ request.employee.id }}" type="button">Approve</button></li>
+{% endfor %}

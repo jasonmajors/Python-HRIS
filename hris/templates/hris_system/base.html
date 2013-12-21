@@ -10,22 +10,44 @@
 
   </head>
   <body>
-    <div class="future navbar">
+    <!-- Navbar along the top -->
+    <div id="future navbar">
       {% if user.is_authenticated %}
       <li>Welcome, {{ user.username }}</li>
+      <li><a href="/hris/">Dashboard</a></li>
       <li><a href="/hris/add_employee">Add New Employee</a></li>
       <li><a href="/hris/submit">Request Time Off</li>
-      <li><a href="/hris/timeoff">View Time Off Requests</li>
+      <li><a href="/hris/timeoff/pending">View Pending Time Off Requests</li>
+      <li><a href="/hris/timeoff/approved">View Approved Time Off Requests</li>
       <li><a href="/hris/logout">Logout</a></li>
       {% else %}
       <li><a href="/hris/login">Login</a></li>
       {% endif %}
      </div> 
+
+     <!-- End of Navbar -->
+     <!-- Search bar on the side -->
+    <div>
+          <p>Search Employees</p>
+          <form>
+          <label></label>
+          <input type="text" name="suggestion" value="" id="suggestion" />
+          </form>
+        
+     
+       {% if employee_list %}
+         <div id="emps">
+          {% include "hris_system/employee_list.html" with employee_list=employee_list %}
+         </div>
+       {% endif %}
+    </div>
+     <!-- End search bar-->
+
     {% block body_block %}
     {% endblock %}
   </body>
       <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="{% static 'jquery.js' %}"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="{% static 'js/jquery.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/hris-ajax.js' %}"></script>
 </html>

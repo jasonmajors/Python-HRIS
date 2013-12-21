@@ -10,6 +10,12 @@ from hris_system.models import TimeOffRequest, Employee
 def index(request):
 	context = RequestContext(request)
 	context_dict = {}
+	
+	employees = Employee.objects.order_by('last_name')[:10]
+	employee_list = get_employee_list()
+	
+	context_dict['employees'] = employees
+	context_dict['employee_list'] = employee_list
 
 	return render_to_response('hris_system/index.html', context_dict, context)
 
@@ -75,19 +81,36 @@ def user_logout(request):
 	return HttpResponseRedirect('/hris/')
 
 @login_required
-def get_timeoff_requests(request):
+def get_timeoff_requests(request, request_status):
 	context = RequestContext(request)
 	context_dict = {}
+	status = request_status.upper()
 
-	pending_requests = TimeOffRequest.objects.filter(status="PENDING")
-	approved_requests = TimeOffRequest.objects.filter(status="APPROVED")
-	denied_requests = TimeOffRequest.objects.filter(status="DENIED")
+	timeoff_requests = TimeOffRequest.objects.filter(status=status)
 
-	context_dict['pending_requests'] = pending_requests
-	context_dict['approved_requests'] = approved_requests
-	context_dict['denied_requests'] = denied_requests
+	context_dict['timeoff_requests'] = timeoff_requests
+	context_dict['status'] = status
 
 	return render_to_response('hris_system/timeoff.html', context_dict, context)
+
+# FIX needed - weird behavior happening.
+def approve_timeoff(request):
+	context = RequestContext(request)
+	context_dict = {}
+	request_id = None
+
+	if request.method == "GET":
+		request_id = request.GET['request_id']
+
+		if request_id:
+			time_off_request = TimeOffRequest.objects.get(id=int(request_id))
+			print time_off_request
+			time_off_request.status = "APPROVED"
+			time_off_request.save()
+			print request_id
+			print time_off_request
+
+	return render_to_response('hris_system/timeoff_requests.html', context_dict, context)
 
 @login_required
 def add_employee(request):
@@ -112,3 +135,33 @@ def add_employee(request):
 		form = EmployeeForm()
 
 	return render_to_response('hris_system/add_employee.html', {'form':form}, context)
+
+def get_employee_list(max_results=0, starts_with=''):
+	employee_list = []
+	if starts_with:
+		employee_list = Employee.objects.filter(last_name__startswith=starts_with)
+	else:
+		employee_list = Employee.objects.all().order_by("last_name")
+
+	if max_results > 0:
+		if len(employee_list) >	max_results:
+			employee_list = employee_list[:max_results]
+
+	return employee_list
+
+def suggest_employee(request):
+	context = RequestContext(request)
+	context_dict = {}
+	employee_list = []
+	starts_with = ''
+	
+	if request.method == "GET":
+		starts_with = request.GET['suggestion']
+	else:
+		starts_with = request.POST['suggestion']
+
+	employee_list = get_employee_list(8, starts_with)
+	
+	context_dict['employee_list'] = employee_list
+
+	return render_to_response('hris_system/employee_list.html', context_dict, context)				
