@@ -17,7 +17,7 @@
 		{% if employees %}
 		<ul>
 			{% for e in employees %}
-				<li>{{ e.last_name }}, {{ e.first_name }}</li>
+				<li><a href="/hris/employee/{{ e.id }}">{{ e.last_name }}, {{ e.first_name }}</a></li>
 			{% endfor %}
 		</ul>
 		{% endif %}		

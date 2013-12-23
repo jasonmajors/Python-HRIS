@@ -8,6 +8,7 @@ class Employee(models.Model):
 	user = models.OneToOneField(User)
 	last_name = models.CharField(max_length=25)
 	first_name = models.CharField(max_length=25)
+	position = models.CharField(max_length=25, default="TEST")
 
 	def __unicode__(self):
 		return self.user.username

@@ -14,7 +14,8 @@ class TimeOffRequestForm(forms.ModelForm):
 class EmployeeForm(forms.ModelForm):		
 	last_name = forms.CharField(max_length=25, help_text="Employee's LAST NAME")
 	first_name = forms.CharField(max_length=25, help_text="Employee's FIRST NAME")
+	position = forms.CharField(max_length=25, help_text="Employee's POSITION")
 
 	class Meta:
 		model = Employee
-		fields = ('last_name', 'first_name')
+		fields = ('last_name', 'first_name', 'position')

@@ -2,7 +2,7 @@
 	<h3>Employees</h3>
 	<ul>
 		{% for employee in employee_list %}
-		<li>{{ employee.last_name }}, {{ employee.first_name }}</li>
+		<li><a href="/hris/employee/{{ employee.id }}">{{ employee.last_name }}, {{ employee.first_name }}</a></li>
 		{% endfor %}
 {% else %}
 	<h3>No Employees in the system</h3>

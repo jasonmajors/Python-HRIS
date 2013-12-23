@@ -10,8 +10,9 @@ from hris_system.models import TimeOffRequest, Employee
 def index(request):
 	context = RequestContext(request)
 	context_dict = {}
-	
-	employees = Employee.objects.order_by('last_name')[:10]
+
+	employees = Employee.objects.order_by('last_name')[:5]
+
 	employee_list = get_employee_list()
 	
 	context_dict['employees'] = employees
@@ -85,12 +86,14 @@ def get_timeoff_requests(request, request_status):
 	context = RequestContext(request)
 	context_dict = {}
 	employee_list = get_employee_list()
+
 	status = request_status.upper()
 	buttons = False
 
 	if status == "PENDING":
 		buttons = True
 
+	# Get either pending, approved, or denied timeoff requests depending on what URL is passed.
 	timeoff_requests = TimeOffRequest.objects.filter(status=status).order_by('-id')
 
 	context_dict['employee_list'] = employee_list
@@ -102,6 +105,8 @@ def get_timeoff_requests(request, request_status):
 
 @login_required
 def handle_timeoff(request):
+	"""A function called to either approve or deny a pending timeoff requests."""
+
 	context = RequestContext(request)
 	context_dict = {}
 	request_id = None
@@ -149,6 +154,7 @@ def add_employee(request):
 
 def get_employee_list(max_results=0, starts_with=''):
 	employee_list = []
+
 	if starts_with:
 		employee_list = Employee.objects.filter(last_name__startswith=starts_with)
 	else:
@@ -165,7 +171,7 @@ def suggest_employee(request):
 	context_dict = {}
 	employee_list = []
 	starts_with = ''
-	
+
 	if request.method == "GET":
 		starts_with = request.GET['suggestion']
 	else:
@@ -176,3 +182,14 @@ def suggest_employee(request):
 	context_dict['employee_list'] = employee_list
 
 	return render_to_response('hris_system/employee_list.html', context_dict, context)				
+
+def get_employee_page(request, employee_url):
+	context = RequestContext(request)
+	context_dict = {}
+	employee = Employee.objects.get(id=employee_url)
+
+	context_dict['employee'] = employee
+
+	return render_to_response('hris_system/employee_page.html', context_dict, context)
+
+

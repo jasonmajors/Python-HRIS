@@ -10,5 +10,6 @@ urlpatterns = patterns('',
 		url(r'^logout/$', views.user_logout, name='logout'),
 		url(r'^add_employee/$', views.add_employee, name='add_employee'),
 		url(r'^suggest_employee/$', views.suggest_employee, name='suggest_employee'),
+		url(r'^employee/(?P<employee_url>\w+)/$', views.get_employee_page, name='get_employee_page'),
 
 		)
