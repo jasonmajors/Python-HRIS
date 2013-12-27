@@ -1,0 +1,18 @@
+{% extends 'hris_system/base.html' %}
+{% block title %}{% endblock %}
+{% block body_block %}
+{% load static %}
+
+<div>
+	<h1>Your Time Off Request History</h1>
+	{% if timeoff_requests %}
+		<ul>
+		{% for request in timeoff_requests %}
+			<li> <strong>{{ request.employee.last_name }}, {{ request.employee.first_name }}</strong> -- START: {{ request.date_start }} | END: {{ request.date_end }} - STATUS: <strong><em>{{ request.status }}</em></strong>
+			</li>
+		{% endfor %}
+		</ul>
+	{% endif %}	
+</div>		
+
+{% endblock %}

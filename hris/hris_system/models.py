@@ -35,7 +35,8 @@ class TimeOffRequest(models.Model):
 	def __unicode__(self):
 		return self.employee.user.username
 
-# Will build this out later.
+# Will build this out later - need JS powers for calendar.
 class Schedule(models.Model):
 	#employee = models.ForeignKey(Employee)
+	#day = models.DateField(auto_now=False, auto_now_add=False)
 	pass		

@@ -16,15 +16,18 @@
       {% if user.is_authenticated %}
         <li>Welcome, {{ user.username }}</li>
         <li><a href="/hris/">Dashboard</a></li>
-        {% if hr_employee %}
+        <li><a href="/hris/my_requests/">My Time Off Status</a></li>
+        {% if hr_user %}
           <li><a href="/hris/add_employee">Add New Employee</a></li>
         {% endif %}
         <li><a href="/hris/submit">Request Time Off</li>
-        <li><a href="/hris/timeoff/pending">View Pending Time Off Requests</li>
-        <li><a href="/hris/timeoff/approved">View Approved Time Off Requests</li>
-        <li><a href="/hris/timeoff/denied">View Denied Time Off Requests</li>
+        {% if hr_user or mgr_user %}
+          <li><a href="/hris/timeoff/pending">View Pending Time Off Requests</li>
+          <li><a href="/hris/timeoff/approved">View Approved Time Off Requests</li>
+          <li><a href="/hris/timeoff/denied">View Denied Time Off Requests</li>
+        {% endif %}
         <li><a href="/hris/logout">Logout</a></li>
-        {% else %}
+      {% else %}
         <li><a href="/hris/login">Login</a></li>
       
       {% endif %}
@@ -33,7 +36,7 @@
      <!-- End of Navbar -->
      <!-- Search bar on the side -->
     <div>
-      {% if user.is_authenticated %}
+      {% if hr_user or mgr_user %}
         {% if employee_list %}
           <p>Search Employees</p>
           <form>

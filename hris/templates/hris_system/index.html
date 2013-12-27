@@ -13,13 +13,16 @@
 <!-- Employee Analytics -->
 <div>
 	<div>
+		{% if hr_user or mgr_user %}
 		<h4>Recent Hires</h4>
 		{% if employees %}
+		
 		<ul>
 			{% for e in employees %}
 				<li><a href="/hris/employee/{{ e.id }}">{{ e.last_name }}, {{ e.first_name }}</a></li>
 			{% endfor %}
 		</ul>
+		{% endif %}
 		{% endif %}		
 	</div>	
 </div>	

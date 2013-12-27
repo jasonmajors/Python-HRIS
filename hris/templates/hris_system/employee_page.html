@@ -6,6 +6,7 @@
 <div>
 	{% if employee %}
 	<h3> {{ employee.first_name }} {{ employee.last_name }} - {{ employee.position }}</h3><br/>
+		{% if hr_user %}
 	<ul>
 		<li><h4>Hired: {{ employee.hire_date}} </h4></li>
 		<li><h4>Phone: {{ employee.phone_number }}</h4></li>
@@ -14,6 +15,10 @@
 		<li><h4>State: {{ employee.state }}</h4></li>
 		<li><h4>Zipcode: {{ employee.zipcode }}</h4></li>
 	</ul>
+		<!-- Not functional yet 
+		<a href="/hris/employee/{{ employee.id }}/edit/"><button type="button">Edit</button> 
+		-->
+		{% endif %}
 	{% endif %}
 </div>
 
