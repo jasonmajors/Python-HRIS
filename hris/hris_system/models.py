@@ -2,13 +2,26 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-# Will build this out later. Adding an employee should create a "User".
-# See: https://docs.djangoproject.com/en/dev/topics/auth/default/#user-objects
 class Employee(models.Model):
 	user = models.OneToOneField(User)
 	last_name = models.CharField(max_length=25)
 	first_name = models.CharField(max_length=25)
-	position = models.CharField(max_length=25, default="TEST")
+	hire_date = models.DateField(auto_now=False, auto_now_add=False)
+	phone_number = models.CharField(max_length=15, blank=True)
+	address = models.CharField(max_length=25, blank=True)
+	city = models.CharField(max_length=25, blank=True)
+	state = models.CharField(max_length=2, blank=True)
+	zipcode = models.IntegerField(blank=True)
+	# Not working properly
+	DEPT_CHOICES = (
+			('New_Hire', 'New Hire'),
+			('HRM', 'Human Resources Manager'),
+			('HRS', 'Human Resources Specialist'),
+			('Dealer', 'Dealer'),
+		)
+
+	department = models.CharField(max_length=25, choices=DEPT_CHOICES, default='New_Hire')
+	position = models.CharField(max_length=25, default='New_Hire')
 
 	def __unicode__(self):
 		return self.user.username

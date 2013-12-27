@@ -5,8 +5,15 @@
 
 <div>
 	{% if employee %}
-	<h3> {{ employee.first_name }} {{ employee.last_name }}</h3><br/>
-	<h4> {{ employee.position }} </h4>
+	<h3> {{ employee.first_name }} {{ employee.last_name }} - {{ employee.position }}</h3><br/>
+	<ul>
+		<li><h4>Hired: {{ employee.hire_date}} </h4></li>
+		<li><h4>Phone: {{ employee.phone_number }}</h4></li>
+		<li><h4>Street Address: {{ employee.address }}</h4></li>
+		<li><h4>City: {{ employee.city }}</h4></li>
+		<li><h4>State: {{ employee.state }}</h4></li>
+		<li><h4>Zipcode: {{ employee.zipcode }}</h4></li>
+	</ul>
 	{% endif %}
 </div>
 

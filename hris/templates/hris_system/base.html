@@ -16,7 +16,9 @@
       {% if user.is_authenticated %}
         <li>Welcome, {{ user.username }}</li>
         <li><a href="/hris/">Dashboard</a></li>
-        <li><a href="/hris/add_employee">Add New Employee</a></li>
+        {% if hr_employee %}
+          <li><a href="/hris/add_employee">Add New Employee</a></li>
+        {% endif %}
         <li><a href="/hris/submit">Request Time Off</li>
         <li><a href="/hris/timeoff/pending">View Pending Time Off Requests</li>
         <li><a href="/hris/timeoff/approved">View Approved Time Off Requests</li>
