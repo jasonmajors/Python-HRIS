@@ -157,6 +157,9 @@ def handle_timeoff(request):
 def add_employee(request):
 	context = RequestContext(request)
 	context_dict = {}
+	hr_user = request.user.groups.filter(name="Human Resources").exists()
+	mgr_user = request.user.groups.filter(name="Shift Manager").exists()
+	employee_list = get_employee_list()
 
 	if request.method == "POST":
 		form = EmployeeForm(request.POST)
@@ -180,7 +183,12 @@ def add_employee(request):
 	else:
 		form = EmployeeForm()
 
-	return render_to_response('hris_system/add_employee.html', {'form':form}, context)
+	context_dict['form'] = form
+	context_dict['employee_list'] = employee_list
+	context_dict['hr_user'] = hr_user
+	context_dict['mgr_user'] = mgr_user
+
+	return render_to_response('hris_system/add_employee.html', context_dict, context)
 
 def get_employee_list(max_results=0, starts_with=''):
 	employee_list = []
@@ -231,11 +239,13 @@ def get_employee_page(request, employee_url):
 
 	return render_to_response('hris_system/employee_page.html', context_dict, context)
 
-
-# NOT FINISHED/WORKING - will require updating an object in the model
+@user_passes_test(hr_or_mgr)
 def edit_employee_page(request, employee_url):
 	context = RequestContext(request)
 	context_dict = {}
+	hr_user = request.user.groups.filter(name="Human Resources").exists()
+	mgr_user = request.user.groups.filter(name="Shift Manager").exists()
+	employee_list = get_employee_list()
 
 	employee = Employee.objects.get(id=employee_url)
 	form = EmployeeForm(request.POST or None, instance=employee)
@@ -244,7 +254,13 @@ def edit_employee_page(request, employee_url):
 
 		return HttpResponseRedirect('/hris/')
 	
-	return render_to_response('hris_system/edit_employee.html', {'form': form, 'employee':employee}, context)
+	context_dict['form'] = form
+	context_dict['employee'] = employee
+	context_dict['employee_list'] = employee_list
+	context_dict['hr_user'] = hr_user
+	context_dict['mgr_user'] = mgr_user
+
+	return render_to_response('hris_system/edit_employee.html', context_dict, context)
 
 def my_timeoff_requests(request):
 	context = RequestContext(request)
