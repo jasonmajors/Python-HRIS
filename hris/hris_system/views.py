@@ -237,6 +237,14 @@ def edit_employee_page(request, employee_url):
 	context = RequestContext(request)
 	context_dict = {}
 
+	employee = Employee.objects.get(id=employee_url)
+	form = EmployeeForm(request.POST or None, instance=employee)
+	if form.is_valid():
+		form.save()
+
+		return HttpResponseRedirect('/hris/')
+	
+	return render_to_response('hris_system/edit_employee.html', {'form': form, 'employee':employee}, context)
 
 def my_timeoff_requests(request):
 	context = RequestContext(request)
