@@ -171,8 +171,8 @@ def add_employee(request):
 			username = employee.first_name + "_" + employee.last_name
 			new_user = User.objects.create_user(username=username, password="password")
 			employee.user = new_user
-			# Create/assign user groups based on employee position.
-			assigned_group, c = Group.objects.get_or_create(name=employee.position)
+			# Create/assign user groups based on employee department.
+			assigned_group, c = Group.objects.get_or_create(name=employee.department)
 			assigned_group.user_set.add(employee.user)
 
 			employee.save()
@@ -239,6 +239,7 @@ def get_employee_page(request, employee_url):
 
 	return render_to_response('hris_system/employee_page.html', context_dict, context)
 
+# Managers can still edit employee pages at this point -- TODO: look into Django permissions.
 @user_passes_test(hr_or_mgr)
 def edit_employee_page(request, employee_url):
 	context = RequestContext(request)
@@ -248,9 +249,16 @@ def edit_employee_page(request, employee_url):
 	employee_list = get_employee_list()
 
 	employee = Employee.objects.get(id=employee_url)
+
 	form = EmployeeForm(request.POST or None, instance=employee)
 	if form.is_valid():
-		form.save()
+		employee_changes = form.save(commit=False)
+		# Update the employee's user groups with their new department -- if they should no longer have access to their
+		# previous department's group, the employee will need this user group removed in the admin interface.
+		employee_group, c = Group.objects.get_or_create(name=employee.department)
+		employee_group.user_set.add(employee.user)
+
+		employee_changes.save()
 
 		return HttpResponseRedirect('/hris/')
 	

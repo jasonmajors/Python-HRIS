@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	
+	// Requires refresh after one request approved.
 	$('.approve').click(function(){
 		var reqid = $(this).attr("data-reqid");
 		var approvedeny = $(this).attr("data-approvedeny");
@@ -9,7 +9,7 @@ $(document).ready(function() {
 			me.hide();
 		});
 	});
-
+	// Requires refresh after one request denied.
 	$('.deny').click(function(){
 		var reqid = $(this).attr("data-reqid");
 		var approvedeny = $(this).attr("data-approvedeny");

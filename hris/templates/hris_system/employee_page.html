@@ -8,6 +8,8 @@
 	<h3> {{ employee.first_name }} {{ employee.last_name }} - {{ employee.position }}</h3><br/>
 		{% if hr_user %}
 	<ul>
+		<li><h4>Status: {{ employee.status }}</h4></li>
+		<li><h4>Department: {{ employee.department }}</h4></li>
 		<li><h4>Hired: {{ employee.hire_date}} </h4></li>
 		<li><h4>Phone: {{ employee.phone_number }}</h4></li>
 		<li><h4>Street Address: {{ employee.address }}</h4></li>

@@ -12,16 +12,26 @@ class Employee(models.Model):
 	city = models.CharField(max_length=25, blank=True)
 	state = models.CharField(max_length=2, blank=True)
 	zipcode = models.IntegerField(blank=True)
-	# Not working properly
+
 	DEPT_CHOICES = (
-			('New_Hire', 'New Hire'),
-			('HRM', 'Human Resources Manager'),
-			('HRS', 'Human Resources Specialist'),
-			('Dealer', 'Dealer'),
+			('New Hire', 'New Hire'),
+			('Human Resources', 'Human Resources'),
+			('Shift Manager', 'Shift Manager'),
+			('Staff', 'Staff'),
+			('IT', 'IT Staff'),
 		)
 
-	department = models.CharField(max_length=25, choices=DEPT_CHOICES, default='New_Hire')
-	position = models.CharField(max_length=25, default='New_Hire')
+	department = models.CharField(max_length=25, choices=DEPT_CHOICES, default="New Hire")
+	position = models.CharField(max_length=25, default='New Hire')
+
+	STATUS_CHOICES = (
+		('Active', 'Active'),
+		('Terminated', 'Terminated'),
+		('Paid Time Off', 'Paid Time Off'),
+		('Personal Time Off', 'Personal Time Off'),
+		('Leave of Absense', 'Leave of Absense' ),
+	)
+	status = models.CharField(max_length=25, choices=STATUS_CHOICES, default="Active")
 
 	def __unicode__(self):
 		return self.user.username
