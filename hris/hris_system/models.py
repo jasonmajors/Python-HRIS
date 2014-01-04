@@ -41,7 +41,8 @@ class TimeOffRequest(models.Model):
 	date_start = models.DateField(auto_now=False, auto_now_add=False)
 	date_end = models.DateField(auto_now=False, auto_now_add=False)
 	status = models.CharField(max_length=25, default="PENDING")
-
+	handler = models.CharField(max_length=25)
+	
 	def __unicode__(self):
 		return self.employee.user.username
 

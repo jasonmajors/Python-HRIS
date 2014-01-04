@@ -132,6 +132,7 @@ def handle_timeoff(request):
 	request_id = None
 
 	status = "PENDING"
+	user = request.user.username.replace('_', ' ')
 	# Even though this function is only activated when a request is approved or denied,
 	# the pending timeoff requests must be fetched and added to the context_dict so they
 	# can be passed to the template.
@@ -148,6 +149,7 @@ def handle_timeoff(request):
 		if request_id:
 			t_request = TimeOffRequest.objects.get(id=int(request_id))
 			t_request.status = approve_or_deny
+			t_request.handler = user
 			t_request.save()
 
 	return render_to_response('hris_system/timeoff_requests.html', context_dict, context)	

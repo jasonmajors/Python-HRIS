@@ -10,7 +10,7 @@
 		<div id="requests">	
 			<ul>
 			{% for request in timeoff_requests %}
-				<li><strong>{{ request.employee.last_name }}, {{ request.employee.first_name }}</strong>: {{ request.employee.position }} -- START: {{ request.date_start }} | END: {{ request.date_end }} 
+				<li><strong>{{ request.employee.last_name }}, {{ request.employee.first_name }}</strong>: {{ request.employee.position }} -- START: {{ request.date_start }} | END: {{ request.date_end }} - Signed: {{ request.handler }}
 				{% if buttons %}			
 				<button class="approve" data-reqid="{{ request.id }}" data-approvedeny="APPROVED" type="button">Approve</button>
 				<button class="deny" data-reqid="{{ request.id }}" data-approvedeny="DENIED" type="button">Deny</button>
