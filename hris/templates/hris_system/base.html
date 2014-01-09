@@ -12,29 +12,32 @@
   <body>
     <!-- Navbar along the top -->
     <div id="future_navbar">
-    	<ul>
-      {% if user.is_authenticated %}
-        <li>Welcome, {{ user.username }}</li>
-        <li><a href="/hris/">Dashboard</a></li>
-        <li><a href="/hris/my_requests/">My Time Off Status</a></li>
-        {% if hr_user %}
-          <li><a href="/hris/add_employee">Add New Employee</a></li>
-        {% endif %}
-        <li><a href="/hris/submit">Request Time Off</li>
-        {% if hr_user or mgr_user %}
-          <li><a href="/hris/timeoff/pending">View Pending Time Off Requests</li>
-          <li><a href="/hris/timeoff/approved">View Approved Time Off Requests</li>
-          <li><a href="/hris/timeoff/denied">View Denied Time Off Requests</li>
-        {% endif %}
-        <li><a href="/hris/logout">Logout</a></li>
-      {% else %}
+ 
+        <ul id="left_links">
+        {% if user.is_authenticated %}
+          <li>Welcome, {{ user.username }}</li>
+          <li><a href="/hris/">Dashboard</a></li>
+          <li><a href="/hris/submit">Request Time Off</li>
+          <li><a href="/hris/my_requests/">My Time Off Status</a></li>
+        </ul>  
+        <!-- need to float the links below to the right... -->
+        <ul id="right_links">
+          {% if hr_user %}
+            <li><a href="/hris/add_employee">Add New Employee</a></li>
+          {% endif %}
+          {% if hr_user or mgr_user %}
+            <li><a href="/hris/timeoff/pending">View Pending Requests</li>
+            <li><a href="/hris/timeoff/approved">View Approved Requests</li>
+            <li><a href="/hris/timeoff/denied">View Denied Requests</li>
+          {% endif %}
+          <li><a href="/hris/logout">Logout</a></li>
+        {% else %}
 
-        <li><a href="/hris/login">Login</a></li>
-      </ul>
-      {% endif %}
+          <li><a href="/hris/login">Login</a></li>
+        </ul>
+        {% endif %}
     
-    </div> 
-
+    </div>  
      <!-- End of Navbar -->
      <!-- Search bar on the side -->
     <div id="side_bar">
