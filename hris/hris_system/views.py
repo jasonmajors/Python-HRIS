@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -223,14 +225,27 @@ def suggest_employee(request):
 
 	return render_to_response('hris_system/employee_list.html', context_dict, context)				
 
+def test_for_timeoff(employee):
+	timeoff_requests = TimeOffRequest.objects.filter(employee=employee)
+	for t in timeoff_requests:
+		if t.status == "APPROVED":
+			if t.date_start < date.today() and date.today() < t.date_end:
+				return True
+
+	return False	
+
 @user_passes_test(hr_or_mgr)
 def get_employee_page(request, employee_url):
 	context = RequestContext(request)
 	context_dict = {}
 	hr_user = request.user.groups.filter(name="Human Resources").exists()
 	mgr_user = request.user.groups.filter(name="Shift Manager").exists()
-
 	employee = Employee.objects.get(id=employee_url)
+
+	on_leave = test_for_timeoff(employee)
+	if on_leave:
+		employee.status = 'Personal Time Off'
+		employee.save()
 
 	employee_list = get_employee_list()
 
@@ -240,6 +255,18 @@ def get_employee_page(request, employee_url):
 	context_dict['mgr_user'] = mgr_user
 
 	return render_to_response('hris_system/employee_page.html', context_dict, context)
+
+def modify_pto(employee):
+	pto_to_modify = []
+
+	timeoff_requests = TimeOffRequest.objects.filter(employee=employee)
+
+	for t in timeoff_requests:
+		if t.status == "APPROVED":
+			if t.date_start < date.today() and date.today() < t.date_end:
+				pto_to_modify.append(t)
+
+	return pto_to_modify
 
 # Managers can still edit employee pages at this point -- TODO: look into Django permissions.
 @user_passes_test(hr_or_mgr)
@@ -251,6 +278,8 @@ def edit_employee_page(request, employee_url):
 	employee_list = get_employee_list()
 
 	employee = Employee.objects.get(id=employee_url)
+	if employee.status == "Personal Time Off":
+		on_pto = True
 
 	form = EmployeeForm(request.POST or None, instance=employee)
 	if form.is_valid():
@@ -259,6 +288,14 @@ def edit_employee_page(request, employee_url):
 		# previous department's group, the employee will need this user group removed in the admin interface.
 		employee_group, c = Group.objects.get_or_create(name=employee.department)
 		employee_group.user_set.add(employee.user)
+
+		if on_pto is True and employee_changes.status != "Personal Time Off":
+			pto_to_modify = modify_pto(employee)
+			for i in pto_to_modify:
+				original_end = i.date_end
+				i.date_end = date.today() - timedelta(1)
+				i.comments = "PTO end date changed from {0} to {1}.".format(original_end, i.date_end)
+				i.save()
 
 		employee_changes.save()
 

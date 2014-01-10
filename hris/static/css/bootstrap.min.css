@@ -50,4 +50,16 @@
 
 #side_bar {
 	padding-top: 75px;
+	padding-left: 20px;
+	width: 300px;
 }
+
+
+#body {
+	width: 50%;
+	margin-right: auto;
+	margin-left: auto;
+	margin-top: -100px;
+
+}
+
