@@ -34,6 +34,7 @@ def submit_timeoff(request):
 	context_dict = {}
 	hr_user = request.user.groups.filter(name="Human Resources").exists()
 	mgr_user = request.user.groups.filter(name="Shift Manager").exists()
+	employee_list = get_employee_list()
 
 	if request.method == 'POST':
 		form = TimeOffRequestForm(request.POST)
@@ -55,6 +56,7 @@ def submit_timeoff(request):
 	context_dict['form'] = form
 	context_dict['hr_user'] = hr_user
 	context_dict['mgr_user'] = mgr_user
+	context_dict['employee_list'] = employee_list
 
 	return render_to_response('hris_system/submit.html', context_dict, context)				
 
@@ -174,6 +176,10 @@ def add_employee(request):
 			# Create login credentials.
 			username = employee.first_name + "_" + employee.last_name
 			new_user = User.objects.create_user(username=username, password="password")
+			new_user.first_name = employee.first_name
+			new_user.last_name = employee.last_name
+			new_user.save()
+
 			employee.user = new_user
 			# Create/assign user groups based on employee department.
 			assigned_group, c = Group.objects.get_or_create(name=employee.department)
@@ -276,6 +282,7 @@ def edit_employee_page(request, employee_url):
 	hr_user = request.user.groups.filter(name="Human Resources").exists()
 	mgr_user = request.user.groups.filter(name="Shift Manager").exists()
 	employee_list = get_employee_list()
+	on_pto = False
 
 	employee = Employee.objects.get(id=employee_url)
 	if employee.status == "Personal Time Off":

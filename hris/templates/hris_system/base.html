@@ -15,7 +15,7 @@
  
         <ul id="left_links">
         {% if user.is_authenticated %}
-          <li>Welcome, {{ user.username }}</li>
+          <li>Welcome, {{ user.first_name }} {{ user.last_name }}</li>
           <li><a href="/hris/">Dashboard</a></li>
           <li><a href="/hris/submit">Request Time Off</li>
           <li><a href="/hris/my_requests/">My Time Off Status</a></li>
@@ -57,7 +57,7 @@
      <!-- End search bar-->
 
      <!-- Begin body -->
-     <div id="body">
+     <div class="body">
     {% block body_block %}
     {% endblock %}
 		</div>

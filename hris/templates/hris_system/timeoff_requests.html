@@ -1,4 +1,4 @@
-<ul>
+<ul class="body">
 {% for request in timeoff_requests %}
 	<li> <strong>{{ request.employee.last_name }}, {{ request.employee.first_name }}</strong>: {{ request.employee.position }} -- START: {{ request.date_start }} | END: {{ request.date_end }} 
 			
