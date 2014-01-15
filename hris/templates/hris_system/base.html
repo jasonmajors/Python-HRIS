@@ -40,7 +40,7 @@
     </div>  
      <!-- End of Navbar -->
      <!-- Search bar on the side -->
-    <div id="side_bar">
+    <div id="sidebar">
       {% if hr_user or mgr_user %}
         {% if employee_list %}
           <p>Search Employees</p>
@@ -57,7 +57,7 @@
      <!-- End search bar-->
 
      <!-- Begin body -->
-     <div class="body">
+     <div id="body">
     {% block body_block %}
     {% endblock %}
 		</div>

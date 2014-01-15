@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	// Requires refresh after one request approved.
+	// Requires refresh after one request approved. Will fix when I need more AJAX...
 	$('.approve').click(function(){
 		var reqid = $(this).attr("data-reqid");
 		var approvedeny = $(this).attr("data-approvedeny");

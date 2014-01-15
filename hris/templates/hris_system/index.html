@@ -10,8 +10,6 @@
 </div>
 <!-- end Dashboard -->
 
-<!-- Employee Analytics -->
-
 <div>
 	{% if hr_user or mgr_user %}
 	<h4>Recent Hires</h4>
@@ -26,6 +24,24 @@
 	{% endif %}		
 </div>	
 
-<!-- end Analytics -->
-
+<div class="analytics">
+	{% if hr_user or mgr_user %}
+	<h2>Analytics</h2>
+	<h4>Hire Date Frequencies</h4>
+		<ul>
+			<li>JAN: {{ hire_date_freq.Jan }}</li>
+			<li>FEB: {{ hire_date_freq.Feb }}</li>
+			<li>MAR: {{ hire_date_freq.Mar }}</li>
+			<li>APRIL: {{ hire_date_freq.Apr }}</li>
+			<li>MAY: {{ hire_date_freq.May }}</li>
+			<li>JUNE: {{ hire_date_freq.June }}</li>
+			<li>JULY: {{ hire_date_freq.July }}</li>
+			<li>AUG: {{ hire_date_freq.Aug }}</li>
+			<li>SEPT: {{ hire_date_freq.Sept }}</li>
+			<li>OCT: {{ hire_date_freq.Oct }}</li>
+			<li>NOV: {{ hire_date_freq.Nov }}</li>
+			<li>DEC: {{ hire_date_freq.Dec }}</li>
+		</ul>
+	{% endif %}	
+</div>
 {% endblock %}	

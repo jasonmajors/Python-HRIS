@@ -1,4 +1,8 @@
+from collections import Counter
 from datetime import date, timedelta
+
+import numpy as numpy
+import matplotlib as plt
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User, Group
@@ -20,11 +24,13 @@ def index(request):
 	mgr_user = request.user.groups.filter(name="Shift Manager").exists()
 
 	employees = Employee.objects.order_by('-hire_date')[:5]
+	hire_date_freq = DateFreq()
 
 	context_dict['employees'] = employees
 	context_dict['hr_user'] = hr_user
 	context_dict['mgr_user'] = mgr_user
 	context_dict['employee_list'] = employee_list
+	context_dict['hire_date_freq'] = hire_date_freq
 
 	return render_to_response('hris_system/index.html', context_dict, context)
 
@@ -135,21 +141,19 @@ def handle_timeoff(request):
 	context_dict = {}
 	request_id = None
 
-	status = "PENDING"
 	user = request.user.username.replace('_', ' ')
 	# Even though this function is only activated when a request is approved or denied,
 	# the pending timeoff requests must be fetched and added to the context_dict so they
 	# can be passed to the template.
-	timeoff_requests = TimeOffRequest.objects.filter(status=status)
+	timeoff_requests = TimeOffRequest.objects.filter(status="PENDING")
 
-	context_dict['status'] = status
 	context_dict['timeoff_requests'] = timeoff_requests
 
 	if request.method == "GET":
 		request_id = request.GET['request_id']
 		# Returns either "APPROVED" or "DENIED".
 		approve_or_deny = request.GET['approve_or_deny']
-
+		print 'ran'
 		if request_id:
 			t_request = TimeOffRequest.objects.get(id=int(request_id))
 			t_request.status = approve_or_deny
@@ -334,6 +338,57 @@ def my_timeoff_requests(request):
 
 	return render_to_response('hris_system/user_timeoff_requests.html', context_dict, context)
 
+def parse_hire_dates():
+	employees = Employee.objects.all()
+	hire_dates = [i.hire_date for i in employees]
+	dates = {}
+	counter = Counter()
+
+	for i in hire_dates:
+		counter[i.month] += 1
+	#Build the 'dates' dictionary from the counter object.
+	#The counter object has months as keys in numerical form.
+	dates['Jan'] = counter[1]
+	dates['Feb'] = counter[2]
+	dates['March'] = counter[3]
+	dates['April'] = counter[4]
+	dates['May'] = counter[5]
+	dates['June'] = counter[6]
+	dates['July'] = counter[7]
+	dates['Aug'] = counter[8]
+	dates['Sept'] = counter[9]
+	dates['Oct'] = counter[10]
+	dates['Nov'] = counter[11]
+	dates['Dec'] = counter[12]
+
+	return dates
+
+def graph(dates):
+	months = dates.keys()
+	frequency = dates.values()
+
+	xlocations = np.array(range(len(months))) + 0.5
+	width = 0.5
+	plt.bar(xlocations, frequency, width=width)
+	plt.xticks(xlocations + width/2, months, rotation=90)
+	plt.subplots_adjust(bottom=0.4)
+	plt.rcParams['figure.figsize'] = 12, 8
 
 
+# Object with attributes holding the frequency of hire dates for each month. TODO: Make less messy
+class DateFreq:
+	def __init__(self):
+		hire_date_freq = parse_hire_dates()
+		self.Jan = hire_date_freq[1]
+		self.Feb = hire_date_freq[2]
+		self.Mar = hire_date_freq[3]
+		self.Apr = hire_date_freq[4]
+		self.May = hire_date_freq[5]
+		self.June = hire_date_freq[6]
+		self.July = hire_date_freq[7]
+		self.Aug = hire_date_freq[8]
+		self.Sept = hire_date_freq[9]
+		self.Oct = hire_date_freq[10]
+		self.Nov = hire_date_freq[11]
+		self.Dec = hire_date_freq[12]
 

@@ -1,9 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-
+# Will build this out later...
+class Schedule(models.Model):
+	#day_one_in = models.DateField(auto_now=False, auto_now_add=False)
+	#
+	pass	
+	
 class Employee(models.Model):
 	user = models.OneToOneField(User)
+	#schedule = models.OnetoOneField(Schedule)
 	last_name = models.CharField(max_length=25)
 	first_name = models.CharField(max_length=25)
 	hire_date = models.DateField(auto_now=False, auto_now_add=False)
@@ -47,8 +53,4 @@ class TimeOffRequest(models.Model):
 	def __unicode__(self):
 		return self.employee.user.username
 
-# Will build this out later - need JS powers for calendar.
-class Schedule(models.Model):
-	#employee = models.ForeignKey(Employee)
-	#day = models.DateField(auto_now=False, auto_now_add=False)
-	pass		
+	
