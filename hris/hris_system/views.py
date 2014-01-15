@@ -1,8 +1,8 @@
 from collections import Counter
 from datetime import date, timedelta
 
-import numpy as numpy
-import matplotlib as plt
+import numpy as np
+import matplotlib.pyplot as plt
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User, Group
@@ -12,6 +12,8 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from hris_system.forms import TimeOffRequestForm, EmployeeForm
 from hris_system.models import TimeOffRequest, Employee 
+
+
 
 def hr_or_mgr(user):
 	return user.groups.filter(name="Shift Manager").exists() or user.groups.filter(name="Human Resources").exists()
@@ -24,13 +26,15 @@ def index(request):
 	mgr_user = request.user.groups.filter(name="Shift Manager").exists()
 
 	employees = Employee.objects.order_by('-hire_date')[:5]
-	hire_date_freq = DateFreq()
+	
+	hire_dates = parse_hire_dates()
+	graph(hire_dates)
 
 	context_dict['employees'] = employees
 	context_dict['hr_user'] = hr_user
 	context_dict['mgr_user'] = mgr_user
 	context_dict['employee_list'] = employee_list
-	context_dict['hire_date_freq'] = hire_date_freq
+
 
 	return render_to_response('hris_system/index.html', context_dict, context)
 
@@ -374,6 +378,7 @@ def graph(dates):
 	plt.subplots_adjust(bottom=0.4)
 	plt.rcParams['figure.figsize'] = 12, 8
 
+	plt.savefig('static/graph.png')
 
 # Object with attributes holding the frequency of hire dates for each month. TODO: Make less messy
 class DateFreq:
