@@ -352,12 +352,12 @@ def parse_hire_dates():
 	employees = Employee.objects.all()
 	hire_dates = [i.hire_date for i in employees]
 	dates = {}
-	counter = Counter()
+	
+	# Loop through the hire dates and add up the freq of each month using the Counter object.
+	counter = Counter([i.month for i in hire_dates])
 
-	for i in hire_dates:
-		counter[i.month] += 1
-	#Build the 'dates' dictionary from the counter object.
-	#The counter object has months as keys in numerical form.
+	# Build the 'dates' dictionary from the counter object.
+	# The counter object has months as keys in numerical form.
 	dates['Jan'] = counter[1]
 	dates['Feb'] = counter[2]
 	dates['March'] = counter[3]
