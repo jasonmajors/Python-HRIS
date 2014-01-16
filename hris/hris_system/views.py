@@ -187,14 +187,13 @@ def add_employee(request):
 			new_user.last_name = employee.last_name
 			new_user.save()
 
-			
-
 			employee.user = new_user
-			# Schedules should be added by managers -- default for development purposes!
+
+			# NOTE: Schedules should be added by managers -- default for development purposes!
 			default_schedule = Schedule()
 			default_schedule.save()
-			
 			employee.schedule = default_schedule
+
 			# Create/assign user groups based on employee department.
 			assigned_group, c = Group.objects.get_or_create(name=employee.department)
 			assigned_group.user_set.add(employee.user)

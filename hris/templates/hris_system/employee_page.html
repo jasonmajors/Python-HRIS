@@ -19,10 +19,19 @@
 		<li><h4>Zipcode: {{ employee.zipcode }}</h4></li>
 	</ul>
 		
-		<a href="/hris/employee/{{ employee.id }}/edit/"><button type="button">Edit</button> 
+		<a href="/hris/employee/{{ employee.id }}/edit/"><button type="button">Edit</button></a> 
 		
 		{% endif %}
 	{% endif %}
+</div>
+<div>
+		{% if hr_user or mgr_user %}
+		<h2>Employee Schedule</h2>
+			<ul>
+				<li>Monday -- Arrives : {{ employee.schedule.monday_in }} || Leaves: {{ employee.schedule.monday_out }}</li>
+			</ul>
+		{% endif %}		
+	
 </div>
 
 {% endblock %}
