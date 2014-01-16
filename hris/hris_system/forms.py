@@ -39,7 +39,7 @@ class EmployeeForm(forms.ModelForm):
 			('Leave of Absense', 'Leave of Absense' ),
 		)
 	status = forms.ChoiceField(choices=STATUS_CHOICES, initial='Active', help_text="Employment Status")
-
+	
 	class Meta:
 		model = Employee
 		fields = ('last_name', 

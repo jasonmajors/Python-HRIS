@@ -1,15 +1,32 @@
+import datetime
+
 from django.db import models
 from django.contrib.auth.models import User
 
-# Will build this out later...
+
+START_TIME = datetime.datetime.now().replace(hour=9, minute=0, second=0, microsecond=0)
+END_TIME = datetime.datetime.now().replace(hour=17, minute=0, second=0, microsecond=0)
+
 class Schedule(models.Model):
-	#day_one_in = models.DateField(auto_now=False, auto_now_add=False)
-	#
-	pass	
+	monday_in = models.TimeField(default=START_TIME.time())
+	monday_out = models.TimeField(default=END_TIME.time())
+	tuesday_in = models.TimeField(default=START_TIME.time())
+	tuesday_out = models.TimeField(default=END_TIME.time())
+	wednesday_in = models.TimeField(default=START_TIME.time())
+	wednesday_out = models.TimeField(default=END_TIME.time())
+	thursday_in = models.TimeField(default=START_TIME.time())
+	thursday_out = models.TimeField(default=END_TIME.time())
+	friday_in = models.TimeField(default=START_TIME.time())
+	friday_out = models.TimeField(default=END_TIME.time())
+	saturday_in = models.TimeField(default=START_TIME.time())
+	saturday_out = models.TimeField(default=END_TIME.time())
+	sunday_in = models.TimeField(default=START_TIME.time())
+	sunday_out = models.TimeField(default=END_TIME.time())
+
 	
 class Employee(models.Model):
 	user = models.OneToOneField(User)
-	#schedule = models.OnetoOneField(Schedule)
+	schedule = models.OneToOneField(Schedule)
 	last_name = models.CharField(max_length=25)
 	first_name = models.CharField(max_length=25)
 	hire_date = models.DateField(auto_now=False, auto_now_add=False)

@@ -11,7 +11,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from hris_system.forms import TimeOffRequestForm, EmployeeForm
-from hris_system.models import TimeOffRequest, Employee 
+from hris_system.models import TimeOffRequest, Employee, Schedule 
 
 
 
@@ -157,7 +157,6 @@ def handle_timeoff(request):
 		request_id = request.GET['request_id']
 		# Returns either "APPROVED" or "DENIED".
 		approve_or_deny = request.GET['approve_or_deny']
-		print 'ran'
 		if request_id:
 			t_request = TimeOffRequest.objects.get(id=int(request_id))
 			t_request.status = approve_or_deny
@@ -177,7 +176,7 @@ def add_employee(request):
 
 	if request.method == "POST":
 		form = EmployeeForm(request.POST)
-
+		
 		if form.is_valid():
 			
 			employee = form.save(commit=False)
@@ -188,7 +187,14 @@ def add_employee(request):
 			new_user.last_name = employee.last_name
 			new_user.save()
 
+			
+
 			employee.user = new_user
+			# Schedules should be added by managers -- default for development purposes!
+			default_schedule = Schedule()
+			default_schedule.save()
+			
+			employee.schedule = default_schedule
 			# Create/assign user groups based on employee department.
 			assigned_group, c = Group.objects.get_or_create(name=employee.department)
 			assigned_group.user_set.add(employee.user)
@@ -343,6 +349,7 @@ def my_timeoff_requests(request):
 	return render_to_response('hris_system/user_timeoff_requests.html', context_dict, context)
 
 def parse_hire_dates():
+	"""Helper function to provide hire date frequencies to the graph function."""
 	employees = Employee.objects.all()
 	hire_dates = [i.hire_date for i in employees]
 	dates = {}
@@ -380,20 +387,5 @@ def graph(dates):
 
 	plt.savefig('static/graph.png')
 
-# Object with attributes holding the frequency of hire dates for each month. TODO: Make less messy
-class DateFreq:
-	def __init__(self):
-		hire_date_freq = parse_hire_dates()
-		self.Jan = hire_date_freq[1]
-		self.Feb = hire_date_freq[2]
-		self.Mar = hire_date_freq[3]
-		self.Apr = hire_date_freq[4]
-		self.May = hire_date_freq[5]
-		self.June = hire_date_freq[6]
-		self.July = hire_date_freq[7]
-		self.Aug = hire_date_freq[8]
-		self.Sept = hire_date_freq[9]
-		self.Oct = hire_date_freq[10]
-		self.Nov = hire_date_freq[11]
-		self.Dec = hire_date_freq[12]
+
 
