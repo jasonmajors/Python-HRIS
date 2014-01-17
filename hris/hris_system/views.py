@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-from hris_system.forms import TimeOffRequestForm, EmployeeForm
+from hris_system.forms import TimeOffRequestForm, EmployeeForm, ScheduleForm
 from hris_system.models import TimeOffRequest, Employee, Schedule 
 
 
@@ -348,16 +348,15 @@ def my_timeoff_requests(request):
 	return render_to_response('hris_system/user_timeoff_requests.html', context_dict, context)
 
 def graph_hire_dates():
-	"""Helper function to provide hire date frequencies to the graph function."""
 	employees = Employee.objects.all()
 	hire_dates = [i.hire_date for i in employees]
-	dates = {}
 	
-	# Loop through the hire dates and add up the freq of each month using the Counter object.
+	# Loop through the hire dates and count the freq of each month with a counter dictionary.
 	counter = Counter([i.month for i in hire_dates])
 
 	# Tuple for the x-axis labels of the graph.
 	months = ('Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sept', 'Ooct', 'Nov', 'Dec')
+	# Months in datetime object stored numerically... 1 == Jan, 2 == Feb, etc.
 	frequency = [counter[1],
 				counter[2],
 				counter[3],
@@ -383,4 +382,26 @@ def graph_hire_dates():
 	plt.savefig('static/graph.png')
 
 
+def edit_employee_schedule(request, employee_url):
+	context = RequestContext(request)
+	context_dict = {}
+	hr_user = request.user.groups.filter(name="Human Resources").exists()
+	mgr_user = request.user.groups.filter(name="Shift Manager").exists()
+	employee_list = get_employee_list()
 
+	employee = Employee.objects.get(id=employee_url)
+
+	form = ScheduleForm(request.POST or None, instance=employee.schedule)
+	if form.is_valid():
+		employee.schedule = form.save(commit=False)
+		employee.schedule.save()
+
+		return HttpResponseRedirect('/hris/')
+
+	context_dict['form'] = form
+	context_dict['employee'] = employee
+	context_dict['employee_list'] = employee_list
+	context_dict['hr_user'] = hr_user
+	context_dict['mgr_user'] = mgr_user
+
+	return render_to_response('hris_system/edit_schedule.html', context_dict, context)

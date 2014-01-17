@@ -1,6 +1,27 @@
 from django import forms
 from django.contrib.auth.models import User
-from hris_system.models import TimeOffRequest, Employee
+from hris_system.models import TimeOffRequest, Employee, Schedule
+
+# TODO: Form needs to accept AM/PM formats instead of just military time...
+class ScheduleForm(forms.ModelForm):
+	monday_in = forms.TimeField(widget=forms.TimeInput(format='%H:%M'), help_text="Monday Start Time")
+	monday_out = forms.TimeField(widget=forms.TimeInput(format='%H:%M'), help_text="Monday Leave Time")
+	tuesday_in = forms.TimeField(widget=forms.TimeInput(format='%H:%M'), help_text="Tuesday Start Time")
+	tuesday_out = forms.TimeField(widget=forms.TimeInput(format='%H:%M'), help_text="Tuesday Leave Time")
+	wednesday_in = forms.TimeField(widget=forms.TimeInput(format='%H:%M'), help_text="Wednesday Start Time")
+	wednesday_out = forms.TimeField(widget=forms.TimeInput(format='%H:%M'), help_text="Wednesday Leave Time")
+	thursday_in = forms.TimeField(widget=forms.TimeInput(format='%H:%M'), help_text="Thursday Start Time")
+	thursday_out = forms.TimeField(widget=forms.TimeInput(format='%H:%M'),help_text="Thursday Leave Time")
+	friday_in = forms.TimeField(widget=forms.TimeInput(format='%H:%M'),help_text="Friday Start Time")
+	friday_out = forms.TimeField(widget=forms.TimeInput(format='%H:%M'),help_text="Friday Leave Time")
+	saturday_in = forms.TimeField(widget=forms.TimeInput(format='%H:%M'),help_text="Saturday Start Time")
+	saturday_out = forms.TimeField(widget=forms.TimeInput(format='%H:%M'),help_text="Saturday Leave Time")
+	sunday_in = forms.TimeField(widget=forms.TimeInput(format='%H:%M'),help_text="Sunday Start Time")
+	sunday_out = forms.TimeField(widget=forms.TimeInput(format='%H:%M'),help_text="Sunday Leave Time")
+
+	class Meta:
+		model = Schedule
+
 
 class TimeOffRequestForm(forms.ModelForm):
 	date_start = forms.DateField(help_text="Please enter the beginning date of your time off request (mm/dd/yyyy).")

@@ -12,6 +12,7 @@ urlpatterns = patterns('',
 		url(r'^suggest_employee/$', views.suggest_employee, name='suggest_employee'),
 		url(r'^employee/(?P<employee_url>\w+)/$', views.get_employee_page, name='get_employee_page'),
 		url(r'^employee/(?P<employee_url>\w+)/edit/$', views.edit_employee_page, name='edit_employee_page'),
+		url(r'^employee/(?P<employee_url>\w+)/schedule/edit/$', views.edit_employee_schedule, name='edit_employee_schedule'),
 		url(r'^my_requests/$', views.my_timeoff_requests, name='my_timeoff_requests'),
 
 		)
