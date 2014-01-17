@@ -27,8 +27,8 @@ def index(request):
 
 	employees = Employee.objects.order_by('-hire_date')[:5]
 	
-	hire_dates = parse_hire_dates()
-	graph(hire_dates)
+	# Saves a .png file of the latest hire date data.
+	graph_hire_dates()
 
 	context_dict['employees'] = employees
 	context_dict['hr_user'] = hr_user
@@ -347,7 +347,7 @@ def my_timeoff_requests(request):
 
 	return render_to_response('hris_system/user_timeoff_requests.html', context_dict, context)
 
-def parse_hire_dates():
+def graph_hire_dates():
 	"""Helper function to provide hire date frequencies to the graph function."""
 	employees = Employee.objects.all()
 	hire_dates = [i.hire_date for i in employees]
@@ -356,26 +356,21 @@ def parse_hire_dates():
 	# Loop through the hire dates and add up the freq of each month using the Counter object.
 	counter = Counter([i.month for i in hire_dates])
 
-	# Build the 'dates' dictionary from the counter object.
-	# The counter object has months as keys in numerical form.
-	dates['Jan'] = counter[1]
-	dates['Feb'] = counter[2]
-	dates['March'] = counter[3]
-	dates['April'] = counter[4]
-	dates['May'] = counter[5]
-	dates['June'] = counter[6]
-	dates['July'] = counter[7]
-	dates['Aug'] = counter[8]
-	dates['Sept'] = counter[9]
-	dates['Oct'] = counter[10]
-	dates['Nov'] = counter[11]
-	dates['Dec'] = counter[12]
-
-	return dates
-
-def graph(dates):
-	months = dates.keys()
-	frequency = dates.values()
+	# Tuple for the x-axis labels of the graph.
+	months = ('Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sept', 'Ooct', 'Nov', 'Dec')
+	frequency = [counter[1],
+				counter[2],
+				counter[3],
+				counter[4],
+				counter[5],
+				counter[6],
+				counter[7],
+				counter[8],
+				counter[9],
+				counter[10],
+				counter[11],
+				counter[12],
+				]
 
 	xlocations = np.array(range(len(months))) + 0.5
 	width = 0.5
@@ -384,6 +379,7 @@ def graph(dates):
 	plt.subplots_adjust(bottom=0.4)
 	plt.rcParams['figure.figsize'] = 12, 8
 
+	plt.ylim([0, max(frequency) + 1])
 	plt.savefig('static/graph.png')
 
 

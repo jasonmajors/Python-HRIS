@@ -29,7 +29,10 @@
 		{% if hr_user or mgr_user %}
 		<h2>Employee Schedule</h2>
 			<ul>
-				<li>Monday -- Arrives : {{ employee.schedule.monday_in }} || Leaves: {{ employee.schedule.monday_out }}</li>
+				<li>Monday -- Arrives: {{ employee.schedule.monday_in }} || Leaves: {{ employee.schedule.monday_out }}</li>
+				<li>Tuesday -- Arrives: {{ employee.schedule.tuesday_in }} || Leaves: {{ employee.schedule.tuesday_out }}</li>
+				<li>Wednesday -- Arrives: {{ employee.schedule.wednesday_in }} || Leaves: {{ employee.schedule.wednesday_out }}</li>
+				<li>Thursday -- Arrives: {{ employee.schedule.thursday_in }} || Leaves: {{ employee.schedule.thursday_out }}</li>
 			</ul>
 		{% endif %}		
 	
