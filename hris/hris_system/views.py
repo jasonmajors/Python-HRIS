@@ -35,6 +35,12 @@ def index(request):
 	context_dict['mgr_user'] = mgr_user
 	context_dict['employee_list'] = employee_list
 
+	try:
+		employee = Employee.objects.get(user=request.user)
+		context_dict['employee'] = employee
+
+	except:
+		pass	
 
 	return render_to_response('hris_system/index.html', context_dict, context)
 
@@ -349,10 +355,9 @@ def my_timeoff_requests(request):
 
 def graph_hire_dates():
 	employees = Employee.objects.all()
-	hire_dates = [i.hire_date for i in employees]
-	
+
 	# Loop through the hire dates and count the freq of each month with a counter dictionary.
-	counter = Counter([i.month for i in hire_dates])
+	counter = Counter([i.hire_date.month for i in employees])
 
 	# Tuple for the x-axis labels of the graph.
 	months = ('Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sept', 'Ooct', 'Nov', 'Dec')
@@ -405,3 +410,5 @@ def edit_employee_schedule(request, employee_url):
 	context_dict['mgr_user'] = mgr_user
 
 	return render_to_response('hris_system/edit_schedule.html', context_dict, context)
+
+
