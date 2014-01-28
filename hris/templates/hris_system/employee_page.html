@@ -7,20 +7,22 @@
 	{% if employee %}
 	<h1>Employee Details</h1>
 	<h3> {{ employee.first_name }} {{ employee.last_name }} - {{ employee.position }}</h3><br/>
-		{% if hr_user %}
+
 	<ul>
 		<li><h4>Status: {{ employee.status }}</h4></li>
 		<li><h4>Department: {{ employee.department }}</h4></li>
+		{% if hr_user %}
 		<li><h4>Hired: {{ employee.hire_date}} </h4></li>
 		<li><h4>Phone: {{ employee.phone_number }}</h4></li>
 		<li><h4>Street Address: {{ employee.address }}</h4></li>
 		<li><h4>City: {{ employee.city }}</h4></li>
 		<li><h4>State: {{ employee.state }}</h4></li>
 		<li><h4>Zipcode: {{ employee.zipcode }}</h4></li>
+		{% endif %}
 	</ul>
 		
+		{% if hr_user %}
 		<a href="/hris/employee/{{ employee.id }}/edit/"><button type="button">Edit Employee Info</button></a> 
-		
 		{% endif %}
 	{% endif %}
 </div>
@@ -28,12 +30,48 @@
 <div id="schedule">
 		{% if hr_user or mgr_user %}
 		<h2>Employee Schedule</h2>
-			<ul>
-				<li>Monday -- Arrives: {{ employee.schedule.monday_in }} || Leaves: {{ employee.schedule.monday_out }}</li>
-				<li>Tuesday -- Arrives: {{ employee.schedule.tuesday_in }} || Leaves: {{ employee.schedule.tuesday_out }}</li>
-				<li>Wednesday -- Arrives: {{ employee.schedule.wednesday_in }} || Leaves: {{ employee.schedule.wednesday_out }}</li>
-				<li>Thursday -- Arrives: {{ employee.schedule.thursday_in }} || Leaves: {{ employee.schedule.thursday_out }}</li>
-			</ul>
+		<table>
+			<tr>
+				<th>Day</th>
+				<th>Scheduled In</th>
+				<th>Scheduled Out</th>
+			</tr>
+			<tr>
+				<td>Monday</td>
+				<td>{{ employee.schedule.monday_in }}</td>
+				<td>{{ employee.schedule.monday_out }}</td>
+			</tr>	
+			<tr>
+				<td>Tuesday</td>
+				<td>{{ employee.schedule.tuesday_in }}</td>
+				<td>{{ employee.schedule.tuesday_out }}</td>
+			</tr>
+			<tr>
+				<td>Wednesday</td>
+				<td>{{ employee.schedule.wednesday_in }}</td>
+				<td>{{ employee.schedule.wednesday_out }}</td>
+			</tr>
+			<tr>
+				<td>Thursday</td>
+				<td>{{ employee.schedule.thursday_in }}</td>
+				<td>{{ employee.schedule.thursday_out }}</td>
+			</tr>
+			<tr>
+				<td>Friday</td>
+				<td>{{ employee.schedule.friday_in }}</td>
+				<td>{{ employee.schedule.friday_out }}</td>
+			</tr>			
+			<tr>
+				<td>Saturday</td>
+				<td>{{ employee.schedule.saturday_in }}</td>
+				<td>{{ employee.schedule.saturday_out }}</td>
+			</tr>	
+			<tr>
+				<td>Sunday</td>
+				<td>{{ employee.schedule.sunday_in }}</td>
+				<td>{{ employee.schedule.sunday_out }}</td>
+			</tr>		
+		</table>
 		{% endif %}	
 		{% if mgr_user %}
 		<a href="/hris/employee/{{ employee.id }}/schedule/edit/"><button type="button">Edit Schedule</button></a>	

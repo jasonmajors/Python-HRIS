@@ -11,38 +11,49 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from hris_system.forms import TimeOffRequestForm, EmployeeForm, ScheduleForm
-from hris_system.models import TimeOffRequest, Employee, Schedule 
+from hris_system.models import TimeOffRequest, Employee, Schedule, UserProfile 
 
 
 
 def hr_or_mgr(user):
+	# Returns True if user is a Shift Manager or HR. This is used for access to certain pages.
 	return user.groups.filter(name="Shift Manager").exists() or user.groups.filter(name="Human Resources").exists()
 
 def index(request):
 	context = RequestContext(request)
 	context_dict = {}
-	employee_list = get_employee_list()
-	hr_user = request.user.groups.filter(name="Human Resources").exists()
-	mgr_user = request.user.groups.filter(name="Shift Manager").exists()
 
-	employees = Employee.objects.order_by('-hire_date')[:5]
-	
-	# Saves a .png file of the latest hire date data.
-	graph_hire_dates()
+	if request.user.is_authenticated():
+		employee_list = get_employee_list()
+		hr_user = request.user.groups.filter(name="Human Resources").exists()
+		mgr_user = request.user.groups.filter(name="Shift Manager").exists()
 
-	context_dict['employees'] = employees
-	context_dict['hr_user'] = hr_user
-	context_dict['mgr_user'] = mgr_user
-	context_dict['employee_list'] = employee_list
+		employees = Employee.objects.order_by('-hire_date')[:5]
+		
+		# The user may not be an "employee". Such as an administrative account.
+		try:
+			employee = Employee.objects.get(user=request.user)
+			context_dict['employee'] = employee
+			profile = UserProfile.objects.get(user=request.user)
+			
+			if profile.first_time_user:
+				print 'new user'
+		
+		except:
+			pass
+		# Saves a .png file of the latest hire date data.
+		graph_hire_dates()
 
-	try:
-		employee = Employee.objects.get(user=request.user)
-		context_dict['employee'] = employee
+		context_dict['employees'] = employees
+		context_dict['hr_user'] = hr_user
+		context_dict['mgr_user'] = mgr_user
+		context_dict['employee_list'] = employee_list
+		
 
-	except:
-		pass	
+		return render_to_response('hris_system/index.html', context_dict, context)
 
-	return render_to_response('hris_system/index.html', context_dict, context)
+	else:
+		return render_to_response('hris_system/login.html', {}, context)
 
 @login_required
 def submit_timeoff(request):
@@ -89,8 +100,6 @@ def user_login(request):
 
 		if user is not None:
 			if user.is_active:
-				user.hr = user.groups.filter(name="Human Resources").exists()
-
 				login(request, user)
 
 				return HttpResponseRedirect('/hris/')
@@ -150,6 +159,7 @@ def handle_timeoff(request):
 	context = RequestContext(request)
 	context_dict = {}
 	request_id = None
+	
 
 	user = request.user.username.replace('_', ' ')
 	# Even though this function is only activated when a request is approved or denied,
@@ -182,7 +192,8 @@ def add_employee(request):
 
 	if request.method == "POST":
 		form = EmployeeForm(request.POST)
-		
+		profile = UserProfile()
+
 		if form.is_valid():
 			
 			employee = form.save(commit=False)
@@ -194,6 +205,8 @@ def add_employee(request):
 			new_user.save()
 
 			employee.user = new_user
+			profile.user = new_user
+			profile.save()
 
 			# NOTE: Schedules should be added by managers -- default for development purposes!
 			default_schedule = Schedule()
@@ -380,7 +393,7 @@ def graph_hire_dates():
 	width = 0.5
 	plt.bar(xlocations, frequency, width=width)
 	plt.xticks(xlocations + width/2, months, rotation=90)
-	plt.subplots_adjust(bottom=0.4)
+	plt.subplots_adjust(bottom=0.15)
 	plt.rcParams['figure.figsize'] = 12, 8
 
 	plt.ylim([0, max(frequency) + 1])

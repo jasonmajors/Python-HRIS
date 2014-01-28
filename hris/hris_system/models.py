@@ -70,4 +70,9 @@ class TimeOffRequest(models.Model):
 	def __unicode__(self):
 		return self.employee.user.username
 
-	
+class UserProfile(models.Model):
+	user = models.OneToOneField(User)
+	first_time_user = models.BooleanField(default=True)
+
+	def __unicode__(self):
+		return self.user.username

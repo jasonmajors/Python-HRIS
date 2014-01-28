@@ -25,7 +25,7 @@
 </div>	
 
 <div class="analytics">
-	{% if hr_user or mgr_user %}
+	{% if hr_user %}
 	<h2>Analytics</h2>
 	<h4>Hire Date Frequencies</h4>
 			<img src="{% static "graph.png" %}" />
@@ -35,12 +35,48 @@
 {% if user.is_authenticated %}
 <div class="schedule">
 	<h2>Your Schedule</h2>
-		<ul>
-			<li>Monday -- Arrives: {{ employee.schedule.monday_in }} || Leaves: {{ employee.schedule.monday_out }}</li>
-			<li>Tuesday -- Arrives: {{ employee.schedule.tuesday_in }} || Leaves: {{ employee.schedule.tuesday_out }}</li>
-			<li>Wednesday -- Arrives: {{ employee.schedule.wednesday_in }} || Leaves: {{ employee.schedule.wednesday_out }}</li>
-			<li>Thursday -- Arrives: {{ employee.schedule.thursday_in }} || Leaves: {{ employee.schedule.thursday_out }}</li>
-		</ul>
+		<table class="table">
+			<tr>
+				<th>Day</th>
+				<th>Scheduled In</th>
+				<th>Scheduled Out</th>
+			</tr>
+			<tr>
+				<td>Monday</td>
+				<td>{{ employee.schedule.monday_in }}</td>
+				<td>{{ employee.schedule.monday_out }}</td>
+			</tr>	
+			<tr>
+				<td>Tuesday</td>
+				<td>{{ employee.schedule.tuesday_in }}</td>
+				<td>{{ employee.schedule.tuesday_out }}</td>
+			</tr>
+			<tr>
+				<td>Wednesday</td>
+				<td>{{ employee.schedule.wednesday_in }}</td>
+				<td>{{ employee.schedule.wednesday_out }}</td>
+			</tr>
+			<tr>
+				<td>Thursday</td>
+				<td>{{ employee.schedule.thursday_in }}</td>
+				<td>{{ employee.schedule.thursday_out }}</td>
+			</tr>
+			<tr>
+				<td>Friday</td>
+				<td>{{ employee.schedule.friday_in }}</td>
+				<td>{{ employee.schedule.friday_out }}</td>
+			</tr>			
+			<tr>
+				<td>Saturday</td>
+				<td>{{ employee.schedule.saturday_in }}</td>
+				<td>{{ employee.schedule.saturday_out }}</td>
+			</tr>	
+			<tr>
+				<td>Sunday</td>
+				<td>{{ employee.schedule.sunday_in }}</td>
+				<td>{{ employee.schedule.sunday_out }}</td>
+			</tr>		
+		</table>
 </div>		
 {% endif %}
 {% endblock %}	
