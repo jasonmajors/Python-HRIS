@@ -38,7 +38,7 @@ def index(request):
 			
 			if profile.first_time_user:
 				print 'new user'
-		
+				return HttpResponseRedirect('/hris/update_password')
 		except:
 			pass
 		# Saves a .png file of the latest hire date data.
@@ -53,7 +53,38 @@ def index(request):
 		return render_to_response('hris_system/index.html', context_dict, context)
 
 	else:
-		return render_to_response('hris_system/login.html', {}, context)
+		return HttpResponseRedirect('/hris/login')
+
+def update_password(request):
+	context = RequestContext(request)
+	context_dict = {}
+	user = request.user
+	profile = UserProfile.objects.get(user=user)
+
+	failed_attempt = False
+
+	if request.method == 'POST':
+		new_password = request.POST['new_password']
+		new_password_confirm = request.POST['new_password_confirm']
+		
+		if new_password == new_password_confirm:
+			if len(new_password) > 7:
+				user.set_password(new_password)
+				profile.first_time_user = False
+
+				profile.save()
+				user.save()
+
+				return HttpResponseRedirect('/hris/')
+
+		else:
+			failed_attempt = True
+			context_dict['failed_attempt'] = failed_attempt
+
+			return render_to_response('hris_system/update_password.html', context_dict, context)
+
+	else:
+		return render_to_response('hris_system/update_password.html', context_dict, context)
 
 @login_required
 def submit_timeoff(request):
@@ -68,9 +99,7 @@ def submit_timeoff(request):
 
 		if form.is_valid():
 			time_off_request = form.save(commit=False)
-			user = User.objects.get(username=request.user)
-			employee = Employee.objects.get(user=user)
-			
+			employee = Employee.objects.get(user=request.user)
 			time_off_request.employee = employee
 			time_off_request.save()
 
