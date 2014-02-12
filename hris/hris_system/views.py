@@ -4,6 +4,7 @@ from datetime import date, timedelta
 import numpy as np
 import matplotlib.pyplot as plt
 
+from django.core.mail import send_mail
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -31,13 +32,14 @@ def index(request):
 		employees = Employee.objects.order_by('-hire_date')[:5]
 		
 		# The user may not be an "employee". Such as an administrative account.
+		# Using try/except lets non-employees with a valid login access the dashboard.
 		try:
 			employee = Employee.objects.get(user=request.user)
 			context_dict['employee'] = employee
 			profile = UserProfile.objects.get(user=request.user)
 			
 			if profile.first_time_user:
-				print 'new user'
+
 				return HttpResponseRedirect('/hris/update_password')
 		except:
 			pass
@@ -103,6 +105,14 @@ def submit_timeoff(request):
 			time_off_request.employee = employee
 			time_off_request.save()
 
+			email_message = "{0} has submitted a request for time off.".format(employee)
+			
+			send_mail('TIME OFF REQUEST -- {0}'.format(employee),
+						email_message,
+						'no.reply.hris@gmail.com',
+						['jasonrmajors@gmail.com'],
+						fail_silently = False)
+
 			return index(request)
 		else:
 			print form.errors
@@ -140,8 +150,6 @@ def user_login(request):
 				
 		else:
 			failed_attempt = True
-
-			print "Invalid login: {0}, {1}".format(username, password)
 
 			return render_to_response("hris_system/login.html", {"failed_attempt": failed_attempt}, context)
 
@@ -188,7 +196,7 @@ def handle_timeoff(request):
 	context = RequestContext(request)
 	context_dict = {}
 	request_id = None
-	
+	buttons = True
 
 	user = request.user.username.replace('_', ' ')
 	# Even though this function is only activated when a request is approved or denied,
@@ -197,7 +205,8 @@ def handle_timeoff(request):
 	timeoff_requests = TimeOffRequest.objects.filter(status="PENDING")
 
 	context_dict['timeoff_requests'] = timeoff_requests
-
+	context_dict['buttons'] = buttons
+	
 	if request.method == "GET":
 		request_id = request.GET['request_id']
 		# Returns either "APPROVED" or "DENIED".
@@ -243,7 +252,7 @@ def add_employee(request):
 			employee.schedule = default_schedule
 
 			# Create/assign user groups based on employee department.
-			assigned_group, c = Group.objects.get_or_create(name=employee.department)
+			assigned_group, _ = Group.objects.get_or_create(name=employee.department)
 			assigned_group.user_set.add(employee.user)
 
 			employee.save()

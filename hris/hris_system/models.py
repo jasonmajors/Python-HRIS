@@ -30,12 +30,12 @@ class Employee(models.Model):
 	last_name = models.CharField(max_length=25)
 	first_name = models.CharField(max_length=25)
 	hire_date = models.DateField(auto_now=False, auto_now_add=False)
-	phone_number = models.CharField(max_length=15, blank=True)
-	address = models.CharField(max_length=25, blank=True)
-	city = models.CharField(max_length=25, blank=True)
-	state = models.CharField(max_length=2, blank=True)
-	zipcode = models.IntegerField(blank=True)
-
+	phone_number = models.CharField(max_length=15, null=True, blank=True)
+	address = models.CharField(max_length=25, null=True, blank=True)
+	city = models.CharField(max_length=25, null=True, blank=True)
+	state = models.CharField(max_length=2, null=True, blank=True)
+	zipcode = models.IntegerField(null=True, blank=True)
+	email = models.CharField(max_length=35, null=True, blank=True, default='jasonrmajors@gmail.com')
 	DEPT_CHOICES = (
 			('New Hire', 'New Hire'),
 			('Human Resources', 'Human Resources'),

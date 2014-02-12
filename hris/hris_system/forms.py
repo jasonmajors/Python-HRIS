@@ -51,6 +51,7 @@ class EmployeeForm(forms.ModelForm):
 	city = forms.CharField(max_length=25, help_text="City")
 	state = forms.CharField(max_length=2, help_text="State")
 	zipcode = forms.IntegerField(help_text="Zipcode")
+	email = forms.CharField(max_length=35, help_text="Email Address", initial="jasonrmajors@gmail.com")
 	
 	STATUS_CHOICES = (
 			('Active', 'Active'),
