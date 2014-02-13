@@ -105,9 +105,9 @@ def submit_timeoff(request):
 			time_off_request.employee = employee
 			time_off_request.save()
 
-			email_message = "{0} has submitted a request for time off.".format(employee)
+			email_message = "{0} has submitted a request for time off.".format(employee.first_name + ' ' + employee.last_name)
 			
-			send_mail('TIME OFF REQUEST -- {0}'.format(employee),
+			send_mail('TIME OFF REQUEST -- {0}'.format(employee.first_name + ' ' + employee.last_name),
 						email_message,
 						'no.reply.hris@gmail.com',
 						['jasonrmajors@gmail.com'],
@@ -189,7 +189,7 @@ def get_timeoff_requests(request, request_status):
 
 	return render_to_response('hris_system/timeoff.html', context_dict, context)
 
-@login_required
+@user_passes_test(hr_or_mgr)
 def handle_timeoff(request):
 	"""A function called to either approve or deny a pending timeoff requests."""
 
