@@ -2,22 +2,25 @@ from django import forms
 from django.contrib.auth.models import User
 from hris_system.models import TimeOffRequest, Employee, Schedule
 
-# TODO: Form needs to accept AM/PM formats instead of just military time...
+
+valid_time_formats = ['%H:%M', '%I:%M%p', '%I:%M %p']
+time_input = forms.TimeInput(format='%I:%M %p')
+
 class ScheduleForm(forms.ModelForm):
-	monday_in = forms.TimeField(widget=forms.TimeInput(format='%H:%M'), help_text="Monday Start Time")
-	monday_out = forms.TimeField(widget=forms.TimeInput(format='%H:%M'), help_text="Monday Leave Time")
-	tuesday_in = forms.TimeField(widget=forms.TimeInput(format='%H:%M'), help_text="Tuesday Start Time")
-	tuesday_out = forms.TimeField(widget=forms.TimeInput(format='%H:%M'), help_text="Tuesday Leave Time")
-	wednesday_in = forms.TimeField(widget=forms.TimeInput(format='%H:%M'), help_text="Wednesday Start Time")
-	wednesday_out = forms.TimeField(widget=forms.TimeInput(format='%H:%M'), help_text="Wednesday Leave Time")
-	thursday_in = forms.TimeField(widget=forms.TimeInput(format='%H:%M'), help_text="Thursday Start Time")
-	thursday_out = forms.TimeField(widget=forms.TimeInput(format='%H:%M'),help_text="Thursday Leave Time")
-	friday_in = forms.TimeField(widget=forms.TimeInput(format='%H:%M'),help_text="Friday Start Time")
-	friday_out = forms.TimeField(widget=forms.TimeInput(format='%H:%M'),help_text="Friday Leave Time")
-	saturday_in = forms.TimeField(widget=forms.TimeInput(format='%H:%M'),help_text="Saturday Start Time")
-	saturday_out = forms.TimeField(widget=forms.TimeInput(format='%H:%M'),help_text="Saturday Leave Time")
-	sunday_in = forms.TimeField(widget=forms.TimeInput(format='%H:%M'),help_text="Sunday Start Time")
-	sunday_out = forms.TimeField(widget=forms.TimeInput(format='%H:%M'),help_text="Sunday Leave Time")
+	monday_in = forms.TimeField(widget=time_input, input_formats=valid_time_formats, help_text="Monday Start Time", required=False)
+	monday_out = forms.TimeField(widget=time_input, input_formats=valid_time_formats,help_text="Monday Leave Time", required=False)
+	tuesday_in = forms.TimeField(widget=time_input, input_formats=valid_time_formats,help_text="Tuesday Start Time", required=False)
+	tuesday_out = forms.TimeField(widget=time_input, input_formats=valid_time_formats,help_text="Tuesday Leave Time", required=False)
+	wednesday_in = forms.TimeField(widget=time_input, input_formats=valid_time_formats,help_text="Wednesday Start Time", required=False)
+	wednesday_out = forms.TimeField(widget=time_input, input_formats=valid_time_formats,help_text="Wednesday Leave Time", required=False)
+	thursday_in = forms.TimeField(widget=time_input, input_formats=valid_time_formats,help_text="Thursday Start Time", required=False)
+	thursday_out = forms.TimeField(widget=time_input,input_formats=valid_time_formats,help_text="Thursday Leave Time", required=False)
+	friday_in = forms.TimeField(widget=time_input, input_formats=valid_time_formats,help_text="Friday Start Time", required=False)
+	friday_out = forms.TimeField(widget=time_input, input_formats=valid_time_formats,help_text="Friday Leave Time", required=False)
+	saturday_in = forms.TimeField(widget=time_input, input_formats=valid_time_formats,help_text="Saturday Start Time", required=False)
+	saturday_out = forms.TimeField(widget=time_input, input_formats=valid_time_formats,help_text="Saturday Leave Time", required=False)
+	sunday_in = forms.TimeField(widget=time_input, input_formats=valid_time_formats,help_text="Sunday Start Time", required=False)
+	sunday_out = forms.TimeField(widget=time_input, input_formats=valid_time_formats,help_text="Sunday Leave Time", required=False)
 
 	class Meta:
 		model = Schedule
@@ -46,12 +49,12 @@ class EmployeeForm(forms.ModelForm):
 		)
 	department = forms.ChoiceField(choices=DEPT_CHOICES, help_text="Department", initial="New Hire")
 	hire_date = forms.DateField(help_text="Employee's hire date")
-	phone_number = forms.CharField(max_length=15, help_text="Phone number")
-	address = forms.CharField(max_length=25, help_text="Street address")
-	city = forms.CharField(max_length=25, help_text="City")
-	state = forms.CharField(max_length=2, help_text="State")
-	zipcode = forms.IntegerField(help_text="Zipcode")
-	email = forms.CharField(max_length=35, help_text="Email Address", initial="jasonrmajors@gmail.com")
+	phone_number = forms.CharField(max_length=15, required=False, help_text="Phone number")
+	address = forms.CharField(max_length=25, required=False, help_text="Street address")
+	city = forms.CharField(max_length=25, required=False, help_text="City")
+	state = forms.CharField(max_length=2, help_text="State", required=False)
+	zipcode = forms.IntegerField(help_text="Zipcode", required=False)
+	email = forms.CharField(max_length=35, help_text="Email Address", initial="jasonrmajors@gmail.com", required=False)
 	
 	STATUS_CHOICES = (
 			('Active', 'Active'),

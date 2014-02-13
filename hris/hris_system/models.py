@@ -4,24 +4,24 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
-START_TIME = datetime.datetime.now().replace(hour=9, minute=0, second=0, microsecond=0)
-END_TIME = datetime.datetime.now().replace(hour=17, minute=0, second=0, microsecond=0)
+END_TIME = datetime.time(hour=17, minute=0, second=0, microsecond=0)
+START_TIME = datetime.time(hour=9, minute=0, second=0, microsecond=0)
 
 class Schedule(models.Model):
-	monday_in = models.TimeField(default=START_TIME.time())
-	monday_out = models.TimeField(default=END_TIME.time())
-	tuesday_in = models.TimeField(default=START_TIME.time())
-	tuesday_out = models.TimeField(default=END_TIME.time())
-	wednesday_in = models.TimeField(default=START_TIME.time())
-	wednesday_out = models.TimeField(default=END_TIME.time())
-	thursday_in = models.TimeField(default=START_TIME.time())
-	thursday_out = models.TimeField(default=END_TIME.time())
-	friday_in = models.TimeField(default=START_TIME.time())
-	friday_out = models.TimeField(default=END_TIME.time())
-	saturday_in = models.TimeField(default=START_TIME.time())
-	saturday_out = models.TimeField(default=END_TIME.time())
-	sunday_in = models.TimeField(default=START_TIME.time())
-	sunday_out = models.TimeField(default=END_TIME.time())
+	monday_in = models.TimeField(default=START_TIME, null=True, blank=True)
+	monday_out = models.TimeField(default=END_TIME, null=True, blank=True)
+	tuesday_in = models.TimeField(default=START_TIME, null=True, blank=True)
+	tuesday_out = models.TimeField(default=END_TIME, null=True, blank=True)
+	wednesday_in = models.TimeField(default=START_TIME, null=True, blank=True)
+	wednesday_out = models.TimeField(default=END_TIME, null=True, blank=True)
+	thursday_in = models.TimeField(default=START_TIME, null=True, blank=True)
+	thursday_out = models.TimeField(default=END_TIME, null=True, blank=True)
+	friday_in = models.TimeField(default=START_TIME, null=True, blank=True)
+	friday_out = models.TimeField(default=END_TIME, null=True, blank=True)
+	saturday_in = models.TimeField(default=None, null=True, blank=True)
+	saturday_out = models.TimeField(default=None, null=True, blank=True)
+	sunday_in = models.TimeField(default=None, null=True, blank=True)
+	sunday_out = models.TimeField(default=None, null=True, blank=True)
 
 	
 class Employee(models.Model):

@@ -4,6 +4,7 @@
 {% load static %}
 <div class="form">
 	<h1>Modify {{ employee.first_name }} {{ employee.last_name }}'s Schedule</h1>
+	<h5>Leave the fields blank for days off</h5>
 	<br/>
 	<form method="POST" action="/hris/employee/{{ employee.id }}/schedule/edit/">
 		{% csrf_token %}

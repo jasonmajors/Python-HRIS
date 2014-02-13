@@ -43,38 +43,38 @@
 			</tr>
 			<tr>
 				<td>Monday</td>
-				<td>{{ employee.schedule.monday_in }}</td>
-				<td>{{ employee.schedule.monday_out }}</td>
+				<td>{{ employee.schedule.monday_in|default_if_none:"Off" }}</td>
+				<td>{{ employee.schedule.monday_out|default_if_none:"Off" }}</td>
 			</tr>	
 			<tr>
 				<td>Tuesday</td>
-				<td>{{ employee.schedule.tuesday_in }}</td>
-				<td>{{ employee.schedule.tuesday_out }}</td>
+				<td>{{ employee.schedule.tuesday_in|default_if_none:"Off" }}</td>
+				<td>{{ employee.schedule.tuesday_out|default_if_none:"Off" }}</td>
 			</tr>
 			<tr>
 				<td>Wednesday</td>
-				<td>{{ employee.schedule.wednesday_in }}</td>
-				<td>{{ employee.schedule.wednesday_out }}</td>
+				<td>{{ employee.schedule.wednesday_in|default_if_none:"Off" }}</td>
+				<td>{{ employee.schedule.wednesday_out|default_if_none:"Off" }}</td>
 			</tr>
 			<tr>
 				<td>Thursday</td>
-				<td>{{ employee.schedule.thursday_in }}</td>
-				<td>{{ employee.schedule.thursday_out }}</td>
+				<td>{{ employee.schedule.thursday_in|default_if_none:"Off" }}</td>
+				<td>{{ employee.schedule.thursday_out|default_if_none:"Off" }}</td>
 			</tr>
 			<tr>
 				<td>Friday</td>
-				<td>{{ employee.schedule.friday_in }}</td>
-				<td>{{ employee.schedule.friday_out }}</td>
+				<td>{{ employee.schedule.friday_in|default_if_none:"Off" }}</td>
+				<td>{{ employee.schedule.friday_out|default_if_none:"Off" }}</td>
 			</tr>			
 			<tr>
 				<td>Saturday</td>
-				<td>{{ employee.schedule.saturday_in }}</td>
-				<td>{{ employee.schedule.saturday_out }}</td>
+				<td>{{ employee.schedule.saturday_in|default_if_none:"Off" }}</td>
+				<td>{{ employee.schedule.saturday_out|default_if_none:"Off" }}</td>
 			</tr>	
 			<tr>
 				<td>Sunday</td>
-				<td>{{ employee.schedule.sunday_in }}</td>
-				<td>{{ employee.schedule.sunday_out }}</td>
+				<td>{{ employee.schedule.sunday_in|default_if_none:"Off" }}</td>
+				<td>{{ employee.schedule.sunday_out|default_if_none:"Off" }}</td>
 			</tr>		
 		</table>
 </div>		

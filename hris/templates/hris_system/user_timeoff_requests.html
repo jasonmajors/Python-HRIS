@@ -4,8 +4,9 @@
 {% load static %}
 
 <div>
-	<h1>Your Request History</h1>
 	{% if timeoff_requests %}
+	<h1>Your Request History</h1>
+	
 			<table class="table">
 				<th>Last Name</th>
 				<th>First Name</th>
@@ -24,7 +25,9 @@
 					<td>{{ request.status }}</td>
 				</tr>
 				{% endfor %}		
-			</table>	
+			</table>
+	{% else %}
+	<h2>You have not submitted any Time Off requests.</h2>	
 	{% endif %}	
 </div>		
 

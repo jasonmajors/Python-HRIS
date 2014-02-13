@@ -140,6 +140,7 @@ def user_login(request):
 		if user is not None:
 			if user.is_active:
 				login(request, user)
+				request.session.set_expiry(0)
 
 				return HttpResponseRedirect('/hris/')
 
@@ -306,6 +307,7 @@ def test_for_timeoff(employee):
 	for t in timeoff_requests:
 		if t.status == "APPROVED":
 			if t.date_start < date.today() and date.today() < t.date_end:
+				
 				return True
 
 	return False	
