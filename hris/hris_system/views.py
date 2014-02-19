@@ -32,7 +32,7 @@ def index(request):
 		employees = Employee.objects.order_by('-hire_date')[:5]
 		
 		# The user may not be an "employee". Such as an administrative account.
-		# Using try/except lets non-employees with a valid login access the dashboard.
+		# Using try/except lets non-employee users with a valid login access the dashboard.
 		try:
 			employee = Employee.objects.get(user=request.user)
 			context_dict['employee'] = employee
@@ -113,7 +113,7 @@ def submit_timeoff(request):
 						['jasonrmajors@gmail.com'],
 						fail_silently = False)
 
-			return index(request)
+			return HttpResponseRedirect('/hris/')
 		else:
 			print form.errors
 	else:
@@ -125,6 +125,13 @@ def submit_timeoff(request):
 	context_dict['employee_list'] = employee_list
 
 	return render_to_response('hris_system/submit.html', context_dict, context)				
+
+
+def cancel_request(request, request_id):	
+	time_off_request = TimeOffRequest.objects.get(id=request_id).delete()
+
+	return HttpResponseRedirect('/hris/my_requests/')
+
 
 def user_login(request):
 	context = RequestContext(request)
@@ -140,6 +147,7 @@ def user_login(request):
 		if user is not None:
 			if user.is_active:
 				login(request, user)
+				# Set session to expire when the browser closes
 				request.session.set_expiry(0)
 
 				return HttpResponseRedirect('/hris/')
@@ -191,34 +199,16 @@ def get_timeoff_requests(request, request_status):
 	return render_to_response('hris_system/timeoff.html', context_dict, context)
 
 @user_passes_test(hr_or_mgr)
-def handle_timeoff(request):
-	"""A function called to either approve or deny a pending timeoff requests."""
-
-	context = RequestContext(request)
-	context_dict = {}
-	request_id = None
-	buttons = True
-
+def handle_timeoff(request, request_id, approve_or_deny):
+	time_off_request = TimeOffRequest.objects.get(id=request_id)
 	user = request.user.username.replace('_', ' ')
-	# Even though this function is only activated when a request is approved or denied,
-	# the pending timeoff requests must be fetched and added to the context_dict so they
-	# can be passed to the template.
-	timeoff_requests = TimeOffRequest.objects.filter(status="PENDING")
 
-	context_dict['timeoff_requests'] = timeoff_requests
-	context_dict['buttons'] = buttons
-	
-	if request.method == "GET":
-		request_id = request.GET['request_id']
-		# Returns either "APPROVED" or "DENIED".
-		approve_or_deny = request.GET['approve_or_deny']
-		if request_id:
-			t_request = TimeOffRequest.objects.get(id=int(request_id))
-			t_request.status = approve_or_deny
-			t_request.handler = user
-			t_request.save()
+	# Set the time off request status to APPROVED or DENIED.
+	time_off_request.status = approve_or_deny.upper()
+	time_off_request.handler = user
+	time_off_request.save()
 
-	return render_to_response('hris_system/timeoff_requests.html', context_dict, context)	
+	return HttpResponseRedirect('/hris/timeoff/pending/')
 
 
 @user_passes_test(hr_or_mgr)
@@ -247,7 +237,6 @@ def add_employee(request):
 			profile.user = new_user
 			profile.save()
 
-			# NOTE: Schedules should be added by managers -- default for development purposes!
 			default_schedule = Schedule()
 			default_schedule.save()
 			employee.schedule = default_schedule
@@ -321,6 +310,8 @@ def get_employee_page(request, employee_url):
 	employee = Employee.objects.get(id=employee_url)
 
 	on_leave = test_for_timeoff(employee)
+	# Uses the test_for_timeoff() to see if the current date falls within an
+	# an existing PTO request. If so, changes their status to on PTO.
 	if on_leave:
 		employee.status = 'Personal Time Off'
 		employee.save()
@@ -334,6 +325,7 @@ def get_employee_page(request, employee_url):
 
 	return render_to_response('hris_system/employee_page.html', context_dict, context)
 
+# Helper function -- appends all approved PTO requests overlapping with today().
 def modify_pto(employee):
 	pto_to_modify = []
 
@@ -368,6 +360,7 @@ def edit_employee_page(request, employee_url):
 		employee_group, c = Group.objects.get_or_create(name=employee.department)
 		employee_group.user_set.add(employee.user)
 
+		# This handles the scenario when an employee is on PTO and manually changed off.
 		if on_pto is True and employee_changes.status != "Personal Time Off":
 			pto_to_modify = modify_pto(employee)
 			for i in pto_to_modify:
@@ -396,9 +389,14 @@ def my_timeoff_requests(request):
 	employee_list = get_employee_list()
 
 	employee = Employee.objects.get(user=request.user)
-	timeoff_requests = TimeOffRequest.objects.filter(employee=employee).order_by('-id')
 
-	context_dict['timeoff_requests'] = timeoff_requests
+	approved_requests = TimeOffRequest.objects.filter(employee=employee, status="APPROVED").order_by('-id')
+	pending_requests = TimeOffRequest.objects.filter(employee=employee, status="PENDING").order_by('-id')
+	denied_requests = TimeOffRequest.objects.filter(employee=employee, status="DENIED").order_by('-id')
+
+	context_dict['approved_requests'] = approved_requests
+	context_dict['denied_requests'] = denied_requests
+	context_dict['pending_requests'] = pending_requests
 	context_dict['hr_user'] = hr_user
 	context_dict['mgr_user'] = mgr_user
 	context_dict['employee_list'] = employee_list

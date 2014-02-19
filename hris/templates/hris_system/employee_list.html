@@ -4,6 +4,7 @@
 		{% for employee in employee_list %}
 		<li><a href="/hris/employee/{{ employee.id }}">{{ employee.last_name }}, {{ employee.first_name }}</a></li>
 		{% endfor %}
+	</ul>
 {% else %}
 	<h3>No employees by this name</h3>
 {% endif %}			

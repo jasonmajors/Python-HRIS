@@ -30,8 +30,8 @@
 					
 					<td>
 						{% if buttons %}
-						<button class="approve" data-reqid="{{ request.id }}" data-approvedeny="APPROVED" type="button">Approve</button>
-						<button class="deny" data-reqid="{{ request.id }}" data-approvedeny="DENIED" type="button">Deny</button>
+						<a href="/hris/handle_timeoff/{{ request.id }}/approved/"><button>Approve</button></a>
+						<a href="/hris/handle_timeoff/{{ request.id }}/denied/"><button>Deny</button></a>
 						{% else %}
 						{{ request.handler }}
 						{% endif %}

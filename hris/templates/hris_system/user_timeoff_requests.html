@@ -4,31 +4,69 @@
 {% load static %}
 
 <div>
-	{% if timeoff_requests %}
 	<h1>Your Request History</h1>
-	
+	{% if pending_requests %}
+	<h3>PENDING</h3>
 			<table class="table">
 				<th>Last Name</th>
 				<th>First Name</th>
 				<th>Position</th>
 				<th>Start Date</th>
 				<th>End Date</th>
-				<th>Status</th>
-
-				{% for request in timeoff_requests %}				
+				<th></th>
+				{% for request in pending_requests %}				
 				<tr>
 					<td>{{ request.employee.last_name }}</td>
 					<td>{{ request.employee.first_name }}</td>
 					<td>{{ request.employee.position }}</td>
 					<td>{{ request.date_start }}</td>
 					<td>{{ request.date_end }}</td>
-					<td>{{ request.status }}</td>
+					<td><a href="/hris/cancel_request/{{ request.id }}">Cancel</a></td>
 				</tr>
 				{% endfor %}		
 			</table>
-	{% else %}
-	<h2>You have not submitted any Time Off requests.</h2>	
-	{% endif %}	
+	{% endif %}
+	{% if approved_requests %}
+	<h3>APPROVED</h3>
+			<table class="table">
+				<th>Last Name</th>
+				<th>First Name</th>
+				<th>Position</th>
+				<th>Start Date</th>
+				<th>End Date</th>
+
+				{% for request in approved_requests %}				
+				<tr>
+					<td>{{ request.employee.last_name }}</td>
+					<td>{{ request.employee.first_name }}</td>
+					<td>{{ request.employee.position }}</td>
+					<td>{{ request.date_start }}</td>
+					<td>{{ request.date_end }}</td>
+				</tr>
+				{% endfor %}		
+			</table>
+	{% endif %}
+	{% if denied_requests %}
+	<h3>DENIED</h3>
+			<table class="table">
+				<th>Last Name</th>
+				<th>First Name</th>
+				<th>Position</th>
+				<th>Start Date</th>
+				<th>End Date</th>
+
+				{% for request in denied_requests %}				
+				<tr>
+					<td>{{ request.employee.last_name }}</td>
+					<td>{{ request.employee.first_name }}</td>
+					<td>{{ request.employee.position }}</td>
+					<td>{{ request.date_start }}</td>
+					<td>{{ request.date_end }}</td>
+				</tr>
+				{% endfor %}		
+			</table>
+	{% endif %}
+
 </div>		
 
 {% endblock %}
