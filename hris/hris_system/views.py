@@ -17,449 +17,449 @@ from hris_system.models import TimeOffRequest, Employee, Schedule, UserProfile
 
 
 def hr_or_mgr(user):
-	# Returns True if user is a Shift Manager or HR. This is used for access to certain pages.
-	return user.groups.filter(name="Shift Manager").exists() or user.groups.filter(name="Human Resources").exists()
+    # Returns True if user is a Shift Manager or HR. This is used for access to certain pages.
+    return user.groups.filter(name="Shift Manager").exists() or user.groups.filter(name="Human Resources").exists()
 
 def index(request):
-	context = RequestContext(request)
-	context_dict = {}
+    context = RequestContext(request)
+    context_dict = {}
 
-	if request.user.is_authenticated():
-		employee_list = get_employee_list()
-		hr_user = request.user.groups.filter(name="Human Resources").exists()
-		mgr_user = request.user.groups.filter(name="Shift Manager").exists()
+    if request.user.is_authenticated():
+        employee_list = get_employee_list()
+        hr_user = request.user.groups.filter(name="Human Resources").exists()
+        mgr_user = request.user.groups.filter(name="Shift Manager").exists()
 
-		employees = Employee.objects.order_by('-hire_date')[:5]
-		
-		# The user may not be an "employee". Such as an administrative account.
-		# Using try/except lets non-employee users with a valid login access the dashboard.
-		try:
-			employee = Employee.objects.get(user=request.user)
-			context_dict['employee'] = employee
-			profile = UserProfile.objects.get(user=request.user)
-			
-			if profile.first_time_user:
+        employees = Employee.objects.order_by('-hire_date')[:5]
+        
+        # The user may not be an "employee". Such as an administrative account.
+        # Using try/except lets non-employee users with a valid login access the dashboard.
+        try:
+            employee = Employee.objects.get(user=request.user)
+            context_dict['employee'] = employee
+            profile = UserProfile.objects.get(user=request.user)
+            
+            if profile.first_time_user:
 
-				return HttpResponseRedirect('/hris/update_password')
-		except:
-			pass
-		# Saves a .png file of the latest hire date data.
-		graph_hire_dates()
+                return HttpResponseRedirect('/hris/update_password')
+        except:
+            pass
+        # Saves a .png file of the latest hire date data.
+        graph_hire_dates()
 
-		context_dict['employees'] = employees
-		context_dict['hr_user'] = hr_user
-		context_dict['mgr_user'] = mgr_user
-		context_dict['employee_list'] = employee_list
-		
+        context_dict['employees'] = employees
+        context_dict['hr_user'] = hr_user
+        context_dict['mgr_user'] = mgr_user
+        context_dict['employee_list'] = employee_list
+        
 
-		return render_to_response('hris_system/index.html', context_dict, context)
+        return render_to_response('hris_system/index.html', context_dict, context)
 
-	else:
-		return HttpResponseRedirect('/hris/login')
+    else:
+        return HttpResponseRedirect('/hris/login')
 
 def update_password(request):
-	context = RequestContext(request)
-	context_dict = {}
-	user = request.user
-	profile = UserProfile.objects.get(user=user)
+    context = RequestContext(request)
+    context_dict = {}
+    user = request.user
+    profile = UserProfile.objects.get(user=user)
 
-	failed_attempt = False
+    failed_attempt = False
 
-	if request.method == 'POST':
-		new_password = request.POST['new_password']
-		new_password_confirm = request.POST['new_password_confirm']
-		
-		if new_password == new_password_confirm:
-			if len(new_password) > 7:
-				user.set_password(new_password)
-				profile.first_time_user = False
+    if request.method == 'POST':
+        new_password = request.POST['new_password']
+        new_password_confirm = request.POST['new_password_confirm']
+        
+        if new_password == new_password_confirm:
+            if len(new_password) > 7:
+                user.set_password(new_password)
+                profile.first_time_user = False
 
-				profile.save()
-				user.save()
+                profile.save()
+                user.save()
 
-				return HttpResponseRedirect('/hris/')
+                return HttpResponseRedirect('/hris/')
 
-		else:
-			failed_attempt = True
-			context_dict['failed_attempt'] = failed_attempt
+        else:
+            failed_attempt = True
+            context_dict['failed_attempt'] = failed_attempt
 
-			return render_to_response('hris_system/update_password.html', context_dict, context)
+            return render_to_response('hris_system/update_password.html', context_dict, context)
 
-	else:
-		return render_to_response('hris_system/update_password.html', context_dict, context)
+    else:
+        return render_to_response('hris_system/update_password.html', context_dict, context)
 
 @login_required
 def submit_timeoff(request):
-	context = RequestContext(request)
-	context_dict = {}
-	hr_user = request.user.groups.filter(name="Human Resources").exists()
-	mgr_user = request.user.groups.filter(name="Shift Manager").exists()
-	employee_list = get_employee_list()
+    context = RequestContext(request)
+    context_dict = {}
+    hr_user = request.user.groups.filter(name="Human Resources").exists()
+    mgr_user = request.user.groups.filter(name="Shift Manager").exists()
+    employee_list = get_employee_list()
 
-	if request.method == 'POST':
-		form = TimeOffRequestForm(request.POST)
+    if request.method == 'POST':
+        form = TimeOffRequestForm(request.POST)
 
-		if form.is_valid():
-			time_off_request = form.save(commit=False)
-			employee = Employee.objects.get(user=request.user)
-			time_off_request.employee = employee
-			time_off_request.save()
+        if form.is_valid():
+            time_off_request = form.save(commit=False)
+            employee = Employee.objects.get(user=request.user)
+            time_off_request.employee = employee
+            time_off_request.save()
 
-			email_message = "{0} has submitted a request for time off.".format(employee.first_name + ' ' + employee.last_name)
-			
-			send_mail('TIME OFF REQUEST -- {0}'.format(employee.first_name + ' ' + employee.last_name),
-						email_message,
-						'no.reply.hris@gmail.com',
-						['jasonrmajors@gmail.com'],
-						fail_silently = False)
+            email_message = "{0} has submitted a request for time off.".format(employee.first_name + ' ' + employee.last_name)
+            
+            send_mail('TIME OFF REQUEST -- {0}'.format(employee.first_name + ' ' + employee.last_name),
+                        email_message,
+                        'no.reply.hris@gmail.com',
+                        ['jasonrmajors@gmail.com'],
+                        fail_silently = False)
 
-			return HttpResponseRedirect('/hris/')
-		else:
-			print form.errors
-	else:
-		form = TimeOffRequestForm()
+            return HttpResponseRedirect('/hris/')
+        else:
+            print form.errors
+    else:
+        form = TimeOffRequestForm()
 
-	context_dict['form'] = form
-	context_dict['hr_user'] = hr_user
-	context_dict['mgr_user'] = mgr_user
-	context_dict['employee_list'] = employee_list
+    context_dict['form'] = form
+    context_dict['hr_user'] = hr_user
+    context_dict['mgr_user'] = mgr_user
+    context_dict['employee_list'] = employee_list
 
-	return render_to_response('hris_system/submit.html', context_dict, context)				
+    return render_to_response('hris_system/submit.html', context_dict, context)             
 
 
-def cancel_request(request, request_id):	
-	time_off_request = TimeOffRequest.objects.get(id=request_id).delete()
+def cancel_request(request, request_id):    
+    time_off_request = TimeOffRequest.objects.get(id=request_id).delete()
 
-	return HttpResponseRedirect('/hris/my_requests/')
+    return HttpResponseRedirect('/hris/my_requests/')
 
 
 def user_login(request):
-	context = RequestContext(request)
-	failed_attempt = False
+    context = RequestContext(request)
+    failed_attempt = False
 
-	if request.method == 'POST':
-		# Information from the login form.
-		username = request.POST['username']
-		password = request.POST['password']
+    if request.method == 'POST':
+        # Information from the login form.
+        username = request.POST['username']
+        password = request.POST['password']
 
-		user = authenticate(username=username, password=password)
+        user = authenticate(username=username, password=password)
 
-		if user is not None:
-			if user.is_active:
-				login(request, user)
-				# Set session to expire when the browser closes
-				request.session.set_expiry(0)
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                # Set session to expire when the browser closes
+                request.session.set_expiry(0)
 
-				return HttpResponseRedirect('/hris/')
+                return HttpResponseRedirect('/hris/')
 
-			else:
-				disabled = True
+            else:
+                disabled = True
 
-				return render_to_response("hris_system/login.html", {"disabled": disabled}, context)	
-				
-		else:
-			failed_attempt = True
+                return render_to_response("hris_system/login.html", {"disabled": disabled}, context)    
+                
+        else:
+            failed_attempt = True
 
-			return render_to_response("hris_system/login.html", {"failed_attempt": failed_attempt}, context)
+            return render_to_response("hris_system/login.html", {"failed_attempt": failed_attempt}, context)
 
-	else:
-		return render_to_response('hris_system/login.html', {}, context)				
+    else:
+        return render_to_response('hris_system/login.html', {}, context)                
 
 @login_required
 def user_logout(request):
-	logout(request)
+    logout(request)
 
-	return HttpResponseRedirect('/hris/')
+    return HttpResponseRedirect('/hris/')
 
 @user_passes_test(hr_or_mgr)
 def get_timeoff_requests(request, request_status):
-	context = RequestContext(request)
-	context_dict = {}
-	employee_list = get_employee_list()
-	hr_user = request.user.groups.filter(name="Human Resources").exists()
-	mgr_user = request.user.groups.filter(name="Shift Manager").exists()
+    context = RequestContext(request)
+    context_dict = {}
+    employee_list = get_employee_list()
+    hr_user = request.user.groups.filter(name="Human Resources").exists()
+    mgr_user = request.user.groups.filter(name="Shift Manager").exists()
 
-	status = request_status.upper()
-	buttons = False
+    status = request_status.upper()
+    buttons = False
 
-	#Only need "Approve" or "Deny" request buttons if the status is pending.
-	if status == "PENDING":
-		buttons = True
+    #Only need "Approve" or "Deny" request buttons if the status is pending.
+    if status == "PENDING":
+        buttons = True
 
-	# Get either pending, approved, or denied timeoff requests depending on what URL is passed.
-	timeoff_requests = TimeOffRequest.objects.filter(status=status).order_by('-id')
+    # Get either pending, approved, or denied timeoff requests depending on what URL is passed.
+    timeoff_requests = TimeOffRequest.objects.filter(status=status).order_by('-id')
 
-	context_dict['employee_list'] = employee_list
-	context_dict['hr_user'] = hr_user
-	context_dict['mgr_user'] = mgr_user
-	context_dict['timeoff_requests'] = timeoff_requests
-	context_dict['status'] = status
-	context_dict['buttons'] = buttons
+    context_dict['employee_list'] = employee_list
+    context_dict['hr_user'] = hr_user
+    context_dict['mgr_user'] = mgr_user
+    context_dict['timeoff_requests'] = timeoff_requests
+    context_dict['status'] = status
+    context_dict['buttons'] = buttons
 
-	return render_to_response('hris_system/timeoff.html', context_dict, context)
+    return render_to_response('hris_system/timeoff.html', context_dict, context)
 
 @user_passes_test(hr_or_mgr)
 def handle_timeoff(request, request_id, approve_or_deny):
-	time_off_request = TimeOffRequest.objects.get(id=request_id)
-	user = request.user.username.replace('_', ' ')
+    time_off_request = TimeOffRequest.objects.get(id=request_id)
+    user = request.user.username.replace('_', ' ')
 
-	# Set the time off request status to APPROVED or DENIED.
-	time_off_request.status = approve_or_deny.upper()
-	time_off_request.handler = user
-	time_off_request.save()
+    # Set the time off request status to APPROVED or DENIED.
+    time_off_request.status = approve_or_deny.upper()
+    time_off_request.handler = user
+    time_off_request.save()
 
-	return HttpResponseRedirect('/hris/timeoff/pending/')
+    return HttpResponseRedirect('/hris/timeoff/pending/')
 
 
 @user_passes_test(hr_or_mgr)
 def add_employee(request):
-	context = RequestContext(request)
-	context_dict = {}
-	hr_user = request.user.groups.filter(name="Human Resources").exists()
-	mgr_user = request.user.groups.filter(name="Shift Manager").exists()
-	employee_list = get_employee_list()
+    context = RequestContext(request)
+    context_dict = {}
+    hr_user = request.user.groups.filter(name="Human Resources").exists()
+    mgr_user = request.user.groups.filter(name="Shift Manager").exists()
+    employee_list = get_employee_list()
 
-	if request.method == "POST":
-		form = EmployeeForm(request.POST)
-		profile = UserProfile()
+    if request.method == "POST":
+        form = EmployeeForm(request.POST)
+        profile = UserProfile()
 
-		if form.is_valid():
-			
-			employee = form.save(commit=False)
-			# Create login credentials.
-			username = employee.first_name + "_" + employee.last_name
-			new_user = User.objects.create_user(username=username, password="password")
-			new_user.first_name = employee.first_name
-			new_user.last_name = employee.last_name
-			new_user.save()
+        if form.is_valid():
+            
+            employee = form.save(commit=False)
+            # Create login credentials.
+            username = employee.first_name + "_" + employee.last_name
+            new_user = User.objects.create_user(username=username, password="password")
+            new_user.first_name = employee.first_name
+            new_user.last_name = employee.last_name
+            new_user.save()
 
-			employee.user = new_user
-			profile.user = new_user
-			profile.save()
+            employee.user = new_user
+            profile.user = new_user
+            profile.save()
 
-			default_schedule = Schedule()
-			default_schedule.save()
-			employee.schedule = default_schedule
+            default_schedule = Schedule()
+            default_schedule.save()
+            employee.schedule = default_schedule
 
-			# Create/assign user groups based on employee department.
-			assigned_group, _ = Group.objects.get_or_create(name=employee.department)
-			assigned_group.user_set.add(employee.user)
+            # Create/assign user groups based on employee department.
+            assigned_group, _ = Group.objects.get_or_create(name=employee.department)
+            assigned_group.user_set.add(employee.user)
 
-			employee.save()
+            employee.save()
 
-			return index(request)
-		else:
-			print form.errors
-	else:
-		form = EmployeeForm()
+            return index(request)
+        else:
+            print form.errors
+    else:
+        form = EmployeeForm()
 
-	context_dict['form'] = form
-	context_dict['employee_list'] = employee_list
-	context_dict['hr_user'] = hr_user
-	context_dict['mgr_user'] = mgr_user
+    context_dict['form'] = form
+    context_dict['employee_list'] = employee_list
+    context_dict['hr_user'] = hr_user
+    context_dict['mgr_user'] = mgr_user
 
-	return render_to_response('hris_system/add_employee.html', context_dict, context)
+    return render_to_response('hris_system/add_employee.html', context_dict, context)
 
 def get_employee_list(max_results=0, starts_with=''):
-	employee_list = []
+    employee_list = []
 
-	if starts_with:
-		employee_list = Employee.objects.filter(last_name__startswith=starts_with)
-	else:
-		employee_list = Employee.objects.all().order_by("last_name")
+    if starts_with:
+        employee_list = Employee.objects.filter(last_name__startswith=starts_with)
+    else:
+        employee_list = Employee.objects.all().order_by("last_name")
 
-	if max_results > 0:
-		if len(employee_list) >	max_results:
-			employee_list = employee_list[:max_results]
+    if max_results > 0:
+        if len(employee_list) > max_results:
+            employee_list = employee_list[:max_results]
 
-	return employee_list
+    return employee_list
 
 def suggest_employee(request):
-	context = RequestContext(request)
-	context_dict = {}
-	employee_list = []
-	starts_with = ''
+    context = RequestContext(request)
+    context_dict = {}
+    employee_list = []
+    starts_with = ''
 
-	if request.method == "GET":
-		starts_with = request.GET['suggestion']
-	else:
-		starts_with = request.POST['suggestion']
+    if request.method == "GET":
+        starts_with = request.GET['suggestion']
+    else:
+        starts_with = request.POST['suggestion']
 
-	employee_list = get_employee_list(8, starts_with)
-	
-	context_dict['employee_list'] = employee_list
+    employee_list = get_employee_list(8, starts_with)
+    
+    context_dict['employee_list'] = employee_list
 
-	return render_to_response('hris_system/employee_list.html', context_dict, context)				
+    return render_to_response('hris_system/employee_list.html', context_dict, context)              
 
 def test_for_timeoff(employee):
-	timeoff_requests = TimeOffRequest.objects.filter(employee=employee)
-	for t in timeoff_requests:
-		if t.status == "APPROVED":
-			if t.date_start < date.today() and date.today() < t.date_end:
-				
-				return True
+    timeoff_requests = TimeOffRequest.objects.filter(employee=employee)
+    for t in timeoff_requests:
+        if t.status == "APPROVED":
+            if t.date_start < date.today() and date.today() < t.date_end:
+                
+                return True
 
-	return False	
+    return False    
 
 @user_passes_test(hr_or_mgr)
 def get_employee_page(request, employee_url):
-	context = RequestContext(request)
-	context_dict = {}
-	hr_user = request.user.groups.filter(name="Human Resources").exists()
-	mgr_user = request.user.groups.filter(name="Shift Manager").exists()
-	employee = Employee.objects.get(id=employee_url)
+    context = RequestContext(request)
+    context_dict = {}
+    hr_user = request.user.groups.filter(name="Human Resources").exists()
+    mgr_user = request.user.groups.filter(name="Shift Manager").exists()
+    employee = Employee.objects.get(id=employee_url)
 
-	on_leave = test_for_timeoff(employee)
-	# Uses the test_for_timeoff() to see if the current date falls within an
-	# an existing PTO request. If so, changes their status to on PTO.
-	if on_leave:
-		employee.status = 'Personal Time Off'
-		employee.save()
+    on_leave = test_for_timeoff(employee)
+    # Uses the test_for_timeoff() to see if the current date falls within an
+    # an existing PTO request. If so, changes their status to on PTO.
+    if on_leave:
+        employee.status = 'Personal Time Off'
+        employee.save()
 
-	employee_list = get_employee_list()
+    employee_list = get_employee_list()
 
-	context_dict['employee'] = employee
-	context_dict['employee_list'] = employee_list
-	context_dict['hr_user'] = hr_user
-	context_dict['mgr_user'] = mgr_user
+    context_dict['employee'] = employee
+    context_dict['employee_list'] = employee_list
+    context_dict['hr_user'] = hr_user
+    context_dict['mgr_user'] = mgr_user
 
-	return render_to_response('hris_system/employee_page.html', context_dict, context)
+    return render_to_response('hris_system/employee_page.html', context_dict, context)
 
 # Helper function -- appends all approved PTO requests overlapping with today().
 def modify_pto(employee):
-	pto_to_modify = []
+    pto_to_modify = []
 
-	timeoff_requests = TimeOffRequest.objects.filter(employee=employee)
+    timeoff_requests = TimeOffRequest.objects.filter(employee=employee)
 
-	for t in timeoff_requests:
-		if t.status == "APPROVED":
-			if t.date_start < date.today() and date.today() < t.date_end:
-				pto_to_modify.append(t)
+    for t in timeoff_requests:
+        if t.status == "APPROVED":
+            if t.date_start < date.today() and date.today() < t.date_end:
+                pto_to_modify.append(t)
 
-	return pto_to_modify
+    return pto_to_modify
 
 # Managers can still edit employee pages at this point -- TODO: look into Django permissions.
 @user_passes_test(hr_or_mgr)
 def edit_employee_page(request, employee_url):
-	context = RequestContext(request)
-	context_dict = {}
-	hr_user = request.user.groups.filter(name="Human Resources").exists()
-	mgr_user = request.user.groups.filter(name="Shift Manager").exists()
-	employee_list = get_employee_list()
-	on_pto = False
+    context = RequestContext(request)
+    context_dict = {}
+    hr_user = request.user.groups.filter(name="Human Resources").exists()
+    mgr_user = request.user.groups.filter(name="Shift Manager").exists()
+    employee_list = get_employee_list()
+    on_pto = False
 
-	employee = Employee.objects.get(id=employee_url)
-	if employee.status == "Personal Time Off":
-		on_pto = True
+    employee = Employee.objects.get(id=employee_url)
+    if employee.status == "Personal Time Off":
+        on_pto = True
 
-	form = EmployeeForm(request.POST or None, instance=employee)
-	if form.is_valid():
-		employee_changes = form.save(commit=False)
-		# Update the employee's user groups with their new department -- if they should no longer have access to their
-		# previous department's group, the employee will need this user group removed in the admin interface.
-		employee_group, c = Group.objects.get_or_create(name=employee.department)
-		employee_group.user_set.add(employee.user)
+    form = EmployeeForm(request.POST or None, instance=employee)
+    if form.is_valid():
+        employee_changes = form.save(commit=False)
+        # Update the employee's user groups with their new department -- if they should no longer have access to their
+        # previous department's group, the employee will need this user group removed in the admin interface.
+        employee_group, c = Group.objects.get_or_create(name=employee.department)
+        employee_group.user_set.add(employee.user)
 
-		# This handles the scenario when an employee is on PTO and manually changed off.
-		if on_pto is True and employee_changes.status != "Personal Time Off":
-			pto_to_modify = modify_pto(employee)
-			for i in pto_to_modify:
-				original_end = i.date_end
-				i.date_end = date.today() - timedelta(1)
-				i.comments = "PTO end date changed from {0} to {1}.".format(original_end, i.date_end)
-				i.save()
+        # This handles the scenario when an employee is on PTO and manually changed off.
+        if on_pto is True and employee_changes.status != "Personal Time Off":
+            pto_to_modify = modify_pto(employee)
+            for i in pto_to_modify:
+                original_end = i.date_end
+                i.date_end = date.today() - timedelta(1)
+                i.comments = "PTO end date changed from {0} to {1}.".format(original_end, i.date_end)
+                i.save()
 
-		employee_changes.save()
+        employee_changes.save()
 
-		return HttpResponseRedirect('/hris/')
-	
-	context_dict['form'] = form
-	context_dict['employee'] = employee
-	context_dict['employee_list'] = employee_list
-	context_dict['hr_user'] = hr_user
-	context_dict['mgr_user'] = mgr_user
+        return HttpResponseRedirect('/hris/')
+    
+    context_dict['form'] = form
+    context_dict['employee'] = employee
+    context_dict['employee_list'] = employee_list
+    context_dict['hr_user'] = hr_user
+    context_dict['mgr_user'] = mgr_user
 
-	return render_to_response('hris_system/edit_employee.html', context_dict, context)
+    return render_to_response('hris_system/edit_employee.html', context_dict, context)
 
 def my_timeoff_requests(request):
-	context = RequestContext(request)
-	context_dict = {}
-	hr_user = request.user.groups.filter(name="Human Resources").exists()
-	mgr_user = request.user.groups.filter(name="Shift Manager").exists()
-	employee_list = get_employee_list()
+    context = RequestContext(request)
+    context_dict = {}
+    hr_user = request.user.groups.filter(name="Human Resources").exists()
+    mgr_user = request.user.groups.filter(name="Shift Manager").exists()
+    employee_list = get_employee_list()
 
-	employee = Employee.objects.get(user=request.user)
+    employee = Employee.objects.get(user=request.user)
 
-	approved_requests = TimeOffRequest.objects.filter(employee=employee, status="APPROVED").order_by('-id')
-	pending_requests = TimeOffRequest.objects.filter(employee=employee, status="PENDING").order_by('-id')
-	denied_requests = TimeOffRequest.objects.filter(employee=employee, status="DENIED").order_by('-id')
+    approved_requests = TimeOffRequest.objects.filter(employee=employee, status="APPROVED").order_by('-id')
+    pending_requests = TimeOffRequest.objects.filter(employee=employee, status="PENDING").order_by('-id')
+    denied_requests = TimeOffRequest.objects.filter(employee=employee, status="DENIED").order_by('-id')
 
-	context_dict['approved_requests'] = approved_requests
-	context_dict['denied_requests'] = denied_requests
-	context_dict['pending_requests'] = pending_requests
-	context_dict['hr_user'] = hr_user
-	context_dict['mgr_user'] = mgr_user
-	context_dict['employee_list'] = employee_list
+    context_dict['approved_requests'] = approved_requests
+    context_dict['denied_requests'] = denied_requests
+    context_dict['pending_requests'] = pending_requests
+    context_dict['hr_user'] = hr_user
+    context_dict['mgr_user'] = mgr_user
+    context_dict['employee_list'] = employee_list
 
 
-	return render_to_response('hris_system/user_timeoff_requests.html', context_dict, context)
+    return render_to_response('hris_system/user_timeoff_requests.html', context_dict, context)
 
 def graph_hire_dates():
-	employees = Employee.objects.all()
+    employees = Employee.objects.all()
 
-	# Loop through the hire dates and count the freq of each month with a counter dictionary.
-	counter = Counter([i.hire_date.month for i in employees])
+    # Loop through the hire dates and count the freq of each month with a counter dictionary.
+    counter = Counter([i.hire_date.month for i in employees])
 
-	# Tuple for the x-axis labels of the graph.
-	months = ('Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sept', 'Ooct', 'Nov', 'Dec')
-	# Months in datetime object stored numerically... 1 == Jan, 2 == Feb, etc.
-	frequency = [counter[1],
-				counter[2],
-				counter[3],
-				counter[4],
-				counter[5],
-				counter[6],
-				counter[7],
-				counter[8],
-				counter[9],
-				counter[10],
-				counter[11],
-				counter[12],
-				]
+    # Tuple for the x-axis labels of the graph.
+    months = ('Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sept', 'Ooct', 'Nov', 'Dec')
+    # Months in datetime object stored numerically... 1 == Jan, 2 == Feb, etc.
+    frequency = [counter[1],
+                counter[2],
+                counter[3],
+                counter[4],
+                counter[5],
+                counter[6],
+                counter[7],
+                counter[8],
+                counter[9],
+                counter[10],
+                counter[11],
+                counter[12],
+                ]
 
-	xlocations = np.array(range(len(months))) + 0.5
-	width = 0.5
-	plt.bar(xlocations, frequency, width=width)
-	plt.xticks(xlocations + width/2, months, rotation=90)
-	plt.subplots_adjust(bottom=0.15)
-	plt.rcParams['figure.figsize'] = 12, 8
+    xlocations = np.array(range(len(months))) + 0.5
+    width = 0.5
+    plt.bar(xlocations, frequency, width=width)
+    plt.xticks(xlocations + width/2, months, rotation=90)
+    plt.subplots_adjust(bottom=0.15)
+    plt.rcParams['figure.figsize'] = 12, 8
 
-	plt.ylim([0, max(frequency) + 1])
-	plt.savefig('static/graph.png')
+    plt.ylim([0, max(frequency) + 1])
+    plt.savefig('static/graph.png')
 
 
 def edit_employee_schedule(request, employee_url):
-	context = RequestContext(request)
-	context_dict = {}
-	hr_user = request.user.groups.filter(name="Human Resources").exists()
-	mgr_user = request.user.groups.filter(name="Shift Manager").exists()
-	employee_list = get_employee_list()
+    context = RequestContext(request)
+    context_dict = {}
+    hr_user = request.user.groups.filter(name="Human Resources").exists()
+    mgr_user = request.user.groups.filter(name="Shift Manager").exists()
+    employee_list = get_employee_list()
 
-	employee = Employee.objects.get(id=employee_url)
+    employee = Employee.objects.get(id=employee_url)
 
-	form = ScheduleForm(request.POST or None, instance=employee.schedule)
-	if form.is_valid():
-		employee.schedule = form.save(commit=False)
-		employee.schedule.save()
+    form = ScheduleForm(request.POST or None, instance=employee.schedule)
+    if form.is_valid():
+        employee.schedule = form.save(commit=False)
+        employee.schedule.save()
 
-		return HttpResponseRedirect('/hris/')
+        return HttpResponseRedirect('/hris/')
 
-	context_dict['form'] = form
-	context_dict['employee'] = employee
-	context_dict['employee_list'] = employee_list
-	context_dict['hr_user'] = hr_user
-	context_dict['mgr_user'] = mgr_user
+    context_dict['form'] = form
+    context_dict['employee'] = employee
+    context_dict['employee_list'] = employee_list
+    context_dict['hr_user'] = hr_user
+    context_dict['mgr_user'] = mgr_user
 
-	return render_to_response('hris_system/edit_schedule.html', context_dict, context)
+    return render_to_response('hris_system/edit_schedule.html', context_dict, context)
 
 
